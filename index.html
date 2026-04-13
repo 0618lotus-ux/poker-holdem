@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Texas Hold'em Poker</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Helvetica Neue',Arial,sans-serif;background:#111827;color:#f9fafb;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:12px 0 48px;}
+    .wrap{width:100%;max-width:820px;padding:0 14px;}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-top:8px;}
+    .header h1{font-size:19px;font-weight:700;}
+    .hand-num{font-size:12px;color:#6b7280;}
+
+    /* MENU */
+    .menu-screen{display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px 20px;text-align:center;}
+    .menu-screen h2{font-size:28px;font-weight:700;color:#f9fafb;}
+    .menu-screen p{font-size:14px;color:#6b7280;}
+    .menu-cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+    .menu-card{background:#1f2937;border:2px solid #374151;border-radius:16px;padding:28px 32px;cursor:pointer;transition:all 0.2s;min-width:180px;}
+    .menu-card:hover{border-color:#6366f1;transform:translateY(-4px);box-shadow:0 8px 30px rgba(99,102,241,0.3);}
+    .menu-card .mc-icon{font-size:40px;margin-bottom:10px;}
+    .menu-card .mc-title{font-size:16px;font-weight:700;color:#f9fafb;}
+    .menu-card .mc-desc{font-size:12px;color:#6b7280;margin-top:4px;}
+
+    /* LOBBY */
+    .lobby-screen{display:flex;flex-direction:column;align-items:center;gap:16px;padding:30px 20px;max-width:420px;margin:0 auto;}
+    .lobby-screen h2{font-size:20px;font-weight:700;}
+    .room-code-box{background:#1f2937;border:2px dashed #4b5563;border-radius:16px;padding:24px 32px;text-align:center;}
+    .room-code-box .label{font-size:12px;color:#6b7280;margin-bottom:8px;}
+    .room-code-box .code{font-size:36px;font-weight:700;letter-spacing:6px;color:#fbbf24;font-family:monospace;}
+    .room-code-box .sublabel{font-size:11px;color:#4b5563;margin-top:6px;}
+    .input-group{display:flex;gap:8px;width:100%;}
+    .input-group input{flex:1;background:#1f2937;border:2px solid #374151;border-radius:10px;padding:10px 14px;font-size:18px;color:#f9fafb;text-align:center;letter-spacing:4px;font-family:monospace;text-transform:uppercase;}
+    .input-group input:focus{outline:none;border-color:#6366f1;}
+    .input-group input::placeholder{font-size:13px;letter-spacing:0;color:#4b5563;}
+    .status-box{font-size:13px;color:#9ca3af;text-align:center;min-height:20px;}
+    .status-box.ok{color:#4ade80;}
+    .status-box.err{color:#f87171;}
+    .connecting-dots::after{content:'...';animation:dots 1.5s infinite;}
+    @keyframes dots{0%,100%{content:'.';}50%{content:'...';}75%{content:'...'}}
+
+    /* TABLE */
+    .table{background:linear-gradient(160deg,#1e3a2f 0%,#14291f 100%);border:5px solid #374151;border-radius:22px;padding:22px 18px;box-shadow:0 8px 40px rgba(0,0,0,0.6),inset 0 0 60px rgba(0,0,0,0.3);}
+    .zone{display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .zone-label{font-size:12px;color:#9ca3af;font-weight:600;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+    .d-badge{background:#f59e0b;color:#111;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;}
+    .online-badge{background:#10b981;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;}
+    .chips-label{font-size:14px;color:#fbbf24;font-weight:600;}
+    .bet-label{font-size:12px;color:#f97316;}
+    .hand-row{display:flex;gap:7px;justify-content:center;margin:3px 0;}
+    .hand-name-box{min-height:30px;text-align:center;}
+    .hand-name-main{font-size:13px;color:#38bdf8;font-weight:700;}
+    .hand-name-desc{font-size:11px;color:#6b7280;margin-top:1px;}
+
+    /* CARDS */
+    .card{width:58px;height:84px;border-radius:7px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;box-shadow:2px 3px 10px rgba(0,0,0,0.5);position:relative;user-select:none;}
+    .card.red{color:#dc2626;}.card.black{color:#111827;}
+    .card .cv{font-size:14px;position:absolute;top:4px;left:5px;line-height:1;}
+    .card .cs{font-size:22px;}
+    .card .cb{font-size:14px;position:absolute;bottom:4px;right:5px;line-height:1;transform:rotate(180deg);}
+    .card.back{background:linear-gradient(135deg,#1d4ed8,#1e40af);}
+    .card.back::after{content:'♠';font-size:28px;color:rgba(255,255,255,0.15);}
+    .card.placeholder{background:rgba(255,255,255,0.05);border:2px dashed rgba(255,255,255,0.1);box-shadow:none;}
+    .community-zone{display:flex;flex-direction:column;align-items:center;gap:7px;margin:16px 0;}
+    .phase-block{text-align:center;}
+    .phase-name{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:2px;}
+    .phase-desc{font-size:12px;color:#4b5563;margin-top:2px;}
+    .community-cards{display:flex;gap:7px;justify-content:center;}
+    .pot-display{font-size:16px;color:#fbbf24;font-weight:700;}
+    .msg-box{min-height:20px;font-size:14px;color:#d1d5db;text-align:center;}
+    .msg-box.win{font-size:17px;color:#fbbf24;font-weight:700;}
+    .divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:11px 0;}
+
+    /* ACTIONS */
+    .action-area{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+    .btn-row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
+    button{border:none;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;padding:9px 22px;transition:all 0.15s;letter-spacing:0.5px;}
+    button:hover{transform:translateY(-2px);filter:brightness(1.1);}
+    button:active{transform:translateY(0);}
+    button:disabled{opacity:0.35;cursor:not-allowed;transform:none;filter:none;}
+    .btn-fold{background:#dc2626;color:#fff;}.btn-call{background:#2563eb;color:#fff;}
+    .btn-raise{background:#16a34a;color:#fff;}.btn-next{background:#f59e0b;color:#111;}
+    .btn-primary{background:#6366f1;color:#fff;}.btn-secondary{background:#374151;color:#d1d5db;}
+    .btn-sm{background:#374151;color:#d1d5db;font-size:12px;padding:7px 14px;}
+    .btn-sm:hover{background:#4b5563;}
+    .btn-group{display:flex;flex-direction:column;align-items:center;gap:3px;}
+    .btn-sublabel{font-size:10px;color:#6b7280;}
+    .raise-ctrl{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border-radius:12px;padding:9px 14px;}
+    .raise-ctrl label{font-size:11px;color:#9ca3af;white-space:nowrap;}
+    input[type="range"]{width:120px;accent-color:#16a34a;cursor:pointer;}
+    .raise-val{font-size:14px;font-weight:700;color:#4ade80;min-width:44px;text-align:right;}
+    .waiting-label{font-size:13px;color:#6b7280;animation:blink 1.2s ease-in-out infinite alternate;}
+    @keyframes blink{from{opacity:0.4}to{opacity:1}}
+
+    /* SUPPORT PANEL */
+    .support-panel{margin-top:12px;background:#1f2937;border:1px solid #374151;border-radius:16px;padding:14px 16px;}
+    .support-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+    .support-title{font-size:12px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;}
+    .stat-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+    .stat-row label{font-size:11px;color:#6b7280;width:80px;flex-shrink:0;}
+    .bar-track{flex:1;height:8px;background:#374151;border-radius:99px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:99px;transition:width 0.4s ease;}
+    .bar-val{font-size:12px;font-weight:700;width:36px;text-align:right;flex-shrink:0;}
+    .odds-row{display:flex;align-items:center;gap:7px;font-size:12px;color:#9ca3af;margin-bottom:8px;flex-wrap:wrap;}
+    .sit-label{font-size:11px;color:#cbd5e1;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:6px 10px;margin-bottom:8px;line-height:1.6;}
+    .sit-label b{color:#fbbf24;}
+    .win-basis{font-size:11px;color:#6b7280;background:#1f2937;border-radius:8px;padding:6px 10px;margin-bottom:8px;line-height:1.6;}
+    .win-basis .wb-label{color:#4b5563;font-weight:600;margin-right:4px;}
+    .win-basis .wb-hand{color:#e2e8f0;font-weight:600;}
+    .win-basis .wb-draw{color:#fbbf24;}
+    .odds-val{color:#f9fafb;font-weight:600;}
+    .odds-badge{font-size:11px;padding:2px 7px;border-radius:20px;font-weight:700;}
+    .odds-ok{background:rgba(34,197,94,0.2);color:#4ade80;}.odds-warn{background:rgba(239,68,68,0.2);color:#f87171;}
+    .draws-section{margin:10px 0;}
+    .section-label{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+    .draw-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px;}
+    .draw-icon{font-size:16px;flex-shrink:0;}.draw-info{flex:1;}
+    .draw-name{font-size:13px;color:#e2e8f0;font-weight:600;}
+    .draw-plain{font-size:11px;color:#9ca3af;margin-top:2px;}
+    .draw-pct{font-size:13px;font-weight:700;flex-shrink:0;margin-top:1px;}
+    .draw-pct.high{color:#4ade80;}.draw-pct.medium{color:#fbbf24;}.draw-pct.low{color:#f87171;}
+    .tip-box{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.04);border-left:3px solid #4b5563;margin-top:10px;}
+    .tip-icon{font-size:18px;flex-shrink:0;}.tip-main{font-size:13px;line-height:1.55;}
+    .tip-reason{font-size:11px;color:#6b7280;margin-top:4px;line-height:1.4;}
+    .no-data{font-size:11px;color:#4b5563;text-align:center;padding:4px 0;}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:200;align-items:center;justify-content:center;padding:16px;}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:#1f2937;border:1px solid #374151;border-radius:18px;padding:22px 20px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;}
+    .modal-box h2{font-size:16px;margin-bottom:4px;color:#f9fafb;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+    .modal-sub{font-size:12px;color:#6b7280;margin-bottom:16px;}
+    .modal-close{background:#374151;color:#9ca3af;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .modal-close:hover{background:#4b5563;transform:none;}
+    .modal-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+    .modal-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:#374151;color:#9ca3af;transition:all 0.15s;}
+    .modal-tab.active{background:#2563eb;color:#fff;transform:none;}
+    .modal-tab:hover{background:#4b5563;transform:none;}
+    .modal-tab.active:hover{background:#1d4ed8;}
+    .tab-content{display:none;}.tab-content.active{display:block;}
+    .hand-cards{display:flex;flex-direction:column;gap:4px;}
+    .hand-card-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+    .hc-rank{width:20px;height:20px;border-radius:50%;background:#374151;font-size:10px;font-weight:700;color:#9ca3af;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .hc-emoji{font-size:18px;flex-shrink:0;}.hc-info{flex:1;}
+    .hc-name{font-size:13px;font-weight:700;color:#f9fafb;}
+    .hc-desc{font-size:11px;color:#6b7280;margin-top:1px;}
+    .hc-ex{font-size:10px;color:#4b5563;margin-top:2px;}
+    .hc-strength{font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;flex-shrink:0;}
+    .str-s{background:rgba(34,197,94,0.15);color:#4ade80;}
+    .str-m{background:rgba(251,191,36,0.15);color:#fbbf24;}
+    .str-w{background:rgba(107,114,128,0.2);color:#9ca3af;}
+    .glossary-item{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:10px;align-items:flex-start;}
+    .glossary-item:last-child{border-bottom:none;}
+    .gl-term{font-size:13px;font-weight:700;color:#38bdf8;min-width:80px;flex-shrink:0;}
+    .gl-def{font-size:12px;color:#d1d5db;line-height:1.5;}
+    .flow-steps{display:flex;flex-direction:column;gap:6px;}
+    .flow-step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;background:rgba(255,255,255,0.03);border-radius:8px;}
+    .step-num{width:20px;height:20px;border-radius:50%;background:#2563eb;font-size:10px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .step-text{font-size:12px;color:#d1d5db;line-height:1.5;}
+    .step-text b{color:#f9fafb;}
+    .game-over-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:60px 20px;text-align:center;}
+    .game-over-screen h2{font-size:40px;color:#fbbf24;}
+    .game-over-screen p{font-size:17px;color:#d1d5db;}
+
+    /* ONLINE PING */
+    .ping-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:8px;font-size:12px;color:#10b981;margin-bottom:10px;}
+    .ping-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:ping 1.5s ease-in-out infinite;}
+    @keyframes ping{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+    /* CUT-IN TOAST */
+    .cutin-toast{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-130%);z-index:400;background:#1a2234;border:1px solid #374151;border-radius:12px;padding:8px 12px 7px;width:230px;max-width:calc(100vw - 24px);box-shadow:0 4px 20px rgba(0,0,0,0.55);pointer-events:none;opacity:0;transition:transform 0.28s cubic-bezier(0.34,1.4,0.64,1),opacity 0.2s ease;}
+    .cutin-toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto;cursor:pointer;}
+    .cutin-inner{display:flex;align-items:center;gap:8px;}
+    .cutin-avatar{font-size:18px;flex-shrink:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border-radius:7px;}
+    .cutin-body{flex:1;min-width:0;}
+    .cutin-actor{font-size:9px;color:#6b7280;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:1px;}
+    .cutin-verb{font-size:14px;font-weight:700;color:#f9fafb;line-height:1.2;}
+    .cutin-amount{font-size:11px;color:#fbbf24;font-weight:600;margin-top:1px;}
+    .cutin-flavor{font-size:10px;color:#6b7280;margin-top:2px;line-height:1.3;}
+    .cutin-prog{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;margin-top:7px;overflow:hidden;}
+    .cutin-prog-fill{height:100%;background:#6366f1;border-radius:1px;width:100%;}
+    .cutin-dismiss{font-size:8px;color:#374151;text-align:center;margin-top:4px;letter-spacing:0.5px;}
+    /* DIFFICULTY / PLAYER SELECT */
+    .ai-menu{display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 20px;text-align:center;}
+    .diff-section{width:100%;max-width:480px;}
+    .diff-label{font-size:12px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+    .diff-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+    .diff-btn{background:#1f2937;border:2px solid #374151;border-radius:14px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;color:#9ca3af;transition:all 0.2s;min-width:120px;}
+    .diff-btn:hover{border-color:#6366f1;color:#f9fafb;transform:translateY(-2px);box-shadow:0 4px 16px rgba(99,102,241,0.2);}
+    .diff-btn.sel{border-color:#6366f1;background:#312e81;color:#fff;transform:translateY(-2px);}
+    /* SETTINGS GEAR */
+    .settings-gear{background:none;border:1px solid #374151;color:#9ca3af;font-size:16px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all 0.15s;}
+    .settings-gear:hover{color:#f9fafb;background:#1f2937;transform:none;border-color:#4b5563;}
+    .cutin-toggle-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#111827;border-radius:12px;margin-top:8px;cursor:pointer;border:1px solid #1f2937;transition:border-color 0.2s;}
+    .cutin-toggle-row:hover{border-color:#374151;}
+    .cutin-toggle-label{font-size:14px;color:#d1d5db;flex:1;text-align:left;}
+    .cutin-toggle-sub{font-size:11px;color:#6b7280;margin-top:2px;}
+    .toggle-sw{width:42px;height:24px;background:#374151;border-radius:12px;position:relative;transition:background 0.2s;flex-shrink:0;}
+    .toggle-sw.on{background:#6366f1;}
+    .toggle-sw::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+    .toggle-sw.on::after{left:21px;}
+    /* MULTI-PLAYER OPPONENTS */
+    .mp-opponents{display:flex;gap:10px;justify-content:center;margin-bottom:10px;flex-wrap:wrap;}
+    .mp-opp-zone{background:rgba(255,255,255,0.04);border:1px solid #374151;border-radius:12px;padding:10px 14px;text-align:center;min-width:120px;flex:1;max-width:200px;transition:border-color 0.2s,box-shadow 0.2s;}
+    .mp-opp-zone.folded{opacity:0.35;}
+    .mp-opp-zone.active-turn{border-color:#fbbf24;box-shadow:0 0 12px rgba(251,191,36,0.25);}
+    .mp-opp-name{font-size:11px;color:#9ca3af;font-weight:700;margin-bottom:5px;letter-spacing:0.5px;}
+    .mp-opp-chips{font-size:13px;color:#fbbf24;font-weight:600;}
+    .mp-opp-bet{font-size:11px;color:#f97316;min-height:16px;margin-top:2px;}
+    .mp-opp-status{font-size:11px;min-height:16px;margin-top:2px;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🃏 Texas Hold'em</h1>
+    <span class="hand-num" id="handNum"></span><button class="settings-gear" onclick="openSettings()" title="設定">⚙️</button>
+  </div>
+  <div id="root"></div>
+</div>
+
+<!-- RULES MODAL -->
+<div id="rulesModal" class="modal-overlay" onclick="closeRules()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h2>ポーカー入門ガイド <button class="modal-close" onclick="closeRules()">✕</button></h2>
+    <p class="modal-sub">初めてでも大丈夫！全部ここで確認できます。</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab(event,'hands')">手役一覧</button>
+      <button class="modal-tab" onclick="switchTab(event,'flow')">ゲームの流れ</button>
+      <button class="modal-tab" onclick="switchTab(event,'actions')">用語集</button>
+      <button class="modal-tab" onclick="switchTab(event,'tips')">初心者コツ</button>
+      <button class="modal-tab" onclick="switchTab(event,'betflow')">📊 行動フロー</button>
+    </div>
+    <div id="tab-hands" class="tab-content active">
+      <div class="hand-cards">
+        <div class="hand-card-item"><div class="hc-rank">1</div><div class="hc-emoji">👑</div><div class="hc-info"><div class="hc-name">ロイヤルフラッシュ</div><div class="hc-desc">同じマークの A・K・Q・J・10</div><div class="hc-ex">例：♠A ♠K ♠Q ♠J ♠10</div></div><div class="hc-strength str-s">最強</div></div>
+        <div class="hand-card-item"><div class="hc-rank">2</div><div class="hc-emoji">🌟</div><div class="hc-info"><div class="hc-name">ストレートフラッシュ</div><div class="hc-desc">同じマークで数字が5枚連続</div><div class="hc-ex">例：♥5 ♥6 ♥7 ♥8 ♥9</div></div><div class="hc-strength str-s">超強</div></div>
+        <div class="hand-card-item"><div class="hc-rank">3</div><div class="hc-emoji">🔥</div><div class="hc-info"><div class="hc-name">フォーカード</div><div class="hc-desc">同じ数字が4枚</div><div class="hc-ex">例：K♠ K♥ K♦ K♣</div></div><div class="hc-strength str-s">強い</div></div>
+        <div class="hand-card-item"><div class="hc-rank">4</div><div class="hc-emoji">💎</div><div class="hc-info"><div class="hc-name">フルハウス</div><div class="hc-desc">同じ数字3枚 ＋ 同じ数字2枚</div><div class="hc-ex">例：Q♠Q♥Q♦ + J♣J♥</div></div><div class="hc-strength str-s">強い</div></div>
+        <div class="hand-card-item"><div class="hc-rank">5</div><div class="hc-emoji">🎴</div><div class="hc-info"><div class="hc-name">フラッシュ</div><div class="hc-desc">同じマークが5枚</div><div class="hc-ex">例：♣2 ♣5 ♣8 ♣J ♣A</div></div><div class="hc-strength str-m">まあ強</div></div>
+        <div class="hand-card-item"><div class="hc-rank">6</div><div class="hc-emoji">📈</div><div class="hc-info"><div class="hc-name">ストレート</div><div class="hc-desc">数字が5枚連続（マーク何でもOK）</div><div class="hc-ex">例：5♠ 6♥ 7♠ 8♣ 9♦</div></div><div class="hc-strength str-m">まあ強</div></div>
+        <div class="hand-card-item"><div class="hc-rank">7</div><div class="hc-emoji">🎯</div><div class="hc-info"><div class="hc-name">スリーカード</div><div class="hc-desc">同じ数字が3枚</div><div class="hc-ex">例：7♠ 7♥ 7♦</div></div><div class="hc-strength str-m">中くらい</div></div>
+        <div class="hand-card-item"><div class="hc-rank">8</div><div class="hc-emoji">👫</div><div class="hc-info"><div class="hc-name">ツーペア</div><div class="hc-desc">同じ数字のペアが2組</div><div class="hc-ex">例：A♠A♥ + 8♦8♣</div></div><div class="hc-strength str-m">中くらい</div></div>
+        <div class="hand-card-item"><div class="hc-rank">9</div><div class="hc-emoji">🤝</div><div class="hc-info"><div class="hc-name">ワンペア</div><div class="hc-desc">同じ数字が2枚</div><div class="hc-ex">例：J♠ J♦</div></div><div class="hc-strength str-w">弱め</div></div>
+        <div class="hand-card-item"><div class="hc-rank">10</div><div class="hc-emoji">📋</div><div class="hc-info"><div class="hc-name">ハイカード</div><div class="hc-desc">役なし・一番大きい数字で勝負</div><div class="hc-ex">例：Aが手札にあれば「エースハイ」</div></div><div class="hc-strength str-w">一番弱い</div></div>
+      </div>
+      <!-- カードの数字強さ -->
+      <div style="margin-top:12px;padding:10px 12px;background:#111827;border-radius:10px;">
+        <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-bottom:8px;">📊 カードの数字の強さ（左が弱い → 右が強い）</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;font-family:monospace;">
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">2</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">3</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">4</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">5</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">6</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">7</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">8</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">9</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">10</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">J</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">Q</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#1f2937;color:#d1d5db;padding:3px 7px;border-radius:5px;font-size:12px;font-weight:700">K</span><span style="color:#374151;font-size:10px">＜</span>
+          <span style="background:#2563eb;color:white;padding:3px 9px;border-radius:5px;font-size:12px;font-weight:700">A</span><span style="color:#fbbf24;font-size:10px;margin-left:2px">最強</span>
+        </div>
+      </div>
+      <!-- 同じ手の勝敗ルール -->
+      <div style="margin-top:10px;padding:10px 12px;background:#111827;border-radius:10px;">
+        <div style="font-size:11px;color:#f9fafb;font-weight:700;margin-bottom:8px;">🤝 同じ役が揃った時の勝敗（タイブレーカー）</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="font-size:10.5px;color:#d1d5db;padding:5px 8px;background:#1f2937;border-radius:6px;border-left:3px solid #4b5563"><b style="color:#fbbf24">ワンペア同士：</b>ペアの数字が大きい方の勝ち。同じなら残りのカード（キッカー）を高い順に比較</div>
+          <div style="font-size:10.5px;color:#d1d5db;padding:5px 8px;background:#1f2937;border-radius:6px;border-left:3px solid #4b5563"><b style="color:#fbbf24">ツーペア同士：</b>上のペアの数字で比較 → 同じなら下のペア → 同じならキッカー</div>
+          <div style="font-size:10.5px;color:#d1d5db;padding:5px 8px;background:#1f2937;border-radius:6px;border-left:3px solid #4b5563"><b style="color:#fbbf24">スリーカード同士：</b>3枚の数字で比較 → 同じならキッカー</div>
+          <div style="font-size:10.5px;color:#d1d5db;padding:5px 8px;background:#1f2937;border-radius:6px;border-left:3px solid #4b5563"><b style="color:#fbbf24">ストレート同士：</b>一番高いカードで比較（A-2-3-4-5は最弱ストレート）</div>
+          <div style="font-size:10.5px;color:#d1d5db;padding:5px 8px;background:#1f2937;border-radius:6px;border-left:3px solid #4b5563"><b style="color:#fbbf24">フラッシュ同士：</b>最高カードから順に比較</div>
+          <div style="font-size:10.5px;color:#d1d5db;padding:5px 8px;background:#1f2937;border-radius:6px;border-left:3px solid #4b5563"><b style="color:#fbbf24">フルハウス同士：</b>3枚の数字で比較 → 同じなら2枚の数字で比較</div>
+          <div style="font-size:10.5px;color:#d1d5db;padding:5px 8px;background:#1f2937;border-radius:6px;border-left:3px solid #4b5563"><b style="color:#fbbf24">フォーカード同士：</b>4枚の数字で比較 → 同じならキッカー</div>
+          <div style="font-size:10.5px;color:#4ade80;padding:5px 8px;background:#0a2a14;border-radius:6px;border-left:3px solid #22c55e"><b>完全に同じ：</b>引き分け → ポットを山分け（2人とも同じチップ獲得）</div>
+        </div>
+      </div>
+    </div>
+    <div id="tab-flow" class="tab-content">
+      <div class="flow-steps">
+        <div class="flow-step"><div class="step-num">1</div><div class="step-text"><b>ブラインド</b><br>ディーラー(D)が10チップ、相手が20チップを自動で出します。</div></div>
+        <div class="flow-step"><div class="step-num">2</div><div class="step-text"><b>プリフロップ</b><br>手札2枚が配られます。強さを見てアクションを選びましょう。</div></div>
+        <div class="flow-step"><div class="step-num">3</div><div class="step-text"><b>フロップ</b><br>共有カード3枚が公開。手札と合わせて役を確認！</div></div>
+        <div class="flow-step"><div class="step-num">4</div><div class="step-text"><b>ターン</b><br>共有カード4枚目が公開。役の完成に近づいていますか？</div></div>
+        <div class="flow-step"><div class="step-num">5</div><div class="step-text"><b>リバー</b><br>最後の5枚目が公開！これで手役が確定します。</div></div>
+        <div class="flow-step"><div class="step-num">6</div><div class="step-text"><b>ショーダウン</b><br>手札公開。7枚から最強の5枚を選んで比べます。</div></div>
+      </div>
+    </div>
+    <div id="tab-actions" class="tab-content">
+      <div class="glossary-item"><div class="gl-term">🔵 ブラインド</div><div class="gl-def">毎ハンド開始時に強制的に出すチップ。ディーラー側が<b>10チップ（スモールブラインド/SB）</b>、相手側が<b>20チップ（ビッグブラインド/BB）</b>を自動投入。これがコール額の違い（10や20）の理由。</div></div>
+      <div class="glossary-item"><div class="gl-term">💰 ベット</div><div class="gl-def">最初にチップを場に出すこと。誰もベットしていない状態で自分からチップを出すのが「ベット」。相手は応じるかフォールドかを選ぶ。「ベット中: X」は今その人が出しているチップ額。</div></div>
+      <div class="glossary-item"><div class="gl-term">🗑️ フォールド</div><div class="gl-def">手を捨てて降りる。これ以上のチップ損失を防げる。</div></div>
+      <div class="glossary-item"><div class="gl-term">✋ チェック</div><div class="gl-def">誰もベットしていない時にパス。0チップで次へ進む。</div></div>
+      <div class="glossary-item"><div class="gl-term">📞 コール</div><div class="gl-def">相手のベット額に合わせてチップを出す。</div></div>
+      <div class="glossary-item"><div class="gl-term">⬆️ レイズ</div><div class="gl-def">ベット額を上乗せする。強い手やブラフの時に使う。</div></div>
+      <div class="glossary-item"><div class="gl-term">🏆 ポット</div><div class="gl-def">場に積まれたチップ。勝者が全部もらえる。</div></div>
+      <div class="glossary-item"><div class="gl-term">🎯 アウト</div><div class="gl-def">役完成に必要な残りカードの枚数。</div></div>
+    </div>
+    <div id="tab-tips" class="tab-content">
+      <div class="flow-steps">
+        <div class="flow-step"><div class="step-num">💡</div><div class="step-text"><b>弱い手はフォールドを恐れない</b><br>プリフロップで弱い手札（数字が小さい・バラバラ）は早めにフォールドが得策。</div></div>
+        <div class="flow-step"><div class="step-num">💡</div><div class="step-text"><b>役なしで大きなベットにコールしない</b><br>フロップ以降で役もドローもなければ、大きなベットにはフォールドが安全。</div></div>
+        <div class="flow-step"><div class="step-num">💡</div><div class="step-text"><b>ドローの完成率を確認</b><br>サポートパネルに「完成率X%」と「コールに必要な勝率Y%」が表示されます。完成率＞必要勝率ならコールが有利！</div></div>
+        <div class="flow-step"><div class="step-num">💡</div><div class="step-text"><b>強い手はレイズで稼ぐ</b><br>フルハウス・フラッシュ以上の役ができたらレイズしてポットを大きくしよう。</div></div>
+      </div>
+    </div>
+    <div id="tab-betflow" class="tab-content">
+      <p style="font-size:11px;color:#6b7280;text-align:center;margin-bottom:6px;">ゲーム開始からショーダウンまでの全体の流れ</p>
+      <svg viewBox="0 0 500 680" style="width:100%;display:block" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="fa2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1 L0,9 L9,5 z" fill="#4b5563"/></marker>
+        </defs>
+
+        <!-- START -->
+        <rect x="110" y="10" width="280" height="32" rx="16" fill="#1d4ed8"/>
+        <text x="250" y="30" text-anchor="middle" fill="white" font-size="14" font-weight="bold">🎮 ゲーム開始</text>
+        <line x1="250" y1="42" x2="250" y2="50" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- BLIND -->
+        <rect x="80" y="52" width="340" height="38" rx="8" fill="#0c1a1a" stroke="#2dd4bf" stroke-width="1.5"/>
+        <text x="250" y="68" text-anchor="middle" fill="#2dd4bf" font-size="12" font-weight="bold">💰 ブラインド（強制ベット）自動投入</text>
+        <text x="250" y="83" text-anchor="middle" fill="#6b7280" font-size="10">ディーラー側→10チップ　相手側→20チップ　がポットへ</text>
+        <line x1="250" y1="90" x2="250" y2="98" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- DEAL -->
+        <rect x="90" y="100" width="320" height="30" rx="8" fill="#0c1a2e" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="250" y="119" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">🃏 手札 2枚 を各自に配布（非公開）</text>
+        <line x1="250" y1="130" x2="250" y2="138" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- PRE BETTING -->
+        <rect x="60" y="140" width="380" height="54" rx="8" fill="#1c1007" stroke="#d97706" stroke-width="2"/>
+        <text x="130" y="158" fill="#fbbf24" font-size="12" font-weight="bold">⚡ ① プリフロップ　ベッティング</text>
+        <text x="250" y="174" text-anchor="middle" fill="#9ca3af" font-size="10.5">チェック・ベット・コール・レイズ　から選択</text>
+        <text x="250" y="187" text-anchor="middle" fill="#ef4444" font-size="10">▶ フォールド（降りる）なら相手の勝ち・即終了</text>
+        <line x1="250" y1="194" x2="250" y2="202" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- FLOP -->
+        <rect x="90" y="204" width="320" height="36" rx="8" fill="#0c1a2e" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="250" y="220" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">🃏🃏🃏 フロップ：共有カード 3枚 公開</text>
+        <text x="250" y="234" text-anchor="middle" fill="#6b7280" font-size="10">手札2枚＋共有3枚　で役を確認しよう</text>
+        <line x1="250" y1="240" x2="250" y2="248" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- FLOP BETTING -->
+        <rect x="60" y="250" width="380" height="54" rx="8" fill="#1c1007" stroke="#d97706" stroke-width="2"/>
+        <text x="130" y="268" fill="#fbbf24" font-size="12" font-weight="bold">⚡ ② フロップ　ベッティング</text>
+        <text x="250" y="284" text-anchor="middle" fill="#9ca3af" font-size="10.5">チェック・ベット・コール・レイズ　から選択</text>
+        <text x="250" y="297" text-anchor="middle" fill="#ef4444" font-size="10">▶ フォールドなら相手の勝ち・即終了</text>
+        <line x1="250" y1="304" x2="250" y2="312" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- TURN -->
+        <rect x="90" y="314" width="320" height="36" rx="8" fill="#0c1a2e" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="250" y="330" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">🃏 ターン：共有カード 4枚目 公開</text>
+        <text x="250" y="344" text-anchor="middle" fill="#6b7280" font-size="10">手札2枚＋共有4枚　で役の完成に近づく</text>
+        <line x1="250" y1="350" x2="250" y2="358" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- TURN BETTING -->
+        <rect x="60" y="360" width="380" height="54" rx="8" fill="#1c1007" stroke="#d97706" stroke-width="2"/>
+        <text x="130" y="378" fill="#fbbf24" font-size="12" font-weight="bold">⚡ ③ ターン　ベッティング</text>
+        <text x="250" y="394" text-anchor="middle" fill="#9ca3af" font-size="10.5">チェック・ベット・コール・レイズ　から選択</text>
+        <text x="250" y="407" text-anchor="middle" fill="#ef4444" font-size="10">▶ フォールドなら相手の勝ち・即終了</text>
+        <line x1="250" y1="414" x2="250" y2="422" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- RIVER -->
+        <rect x="90" y="424" width="320" height="36" rx="8" fill="#0c1a2e" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="250" y="440" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">🃏 リバー：共有カード 5枚目（最後）公開</text>
+        <text x="250" y="454" text-anchor="middle" fill="#6b7280" font-size="10">手札2枚＋共有5枚　で役が確定！</text>
+        <line x1="250" y1="460" x2="250" y2="468" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- RIVER BETTING -->
+        <rect x="60" y="470" width="380" height="54" rx="8" fill="#1c1007" stroke="#d97706" stroke-width="2"/>
+        <text x="130" y="488" fill="#fbbf24" font-size="12" font-weight="bold">⚡ ④ リバー　ベッティング（最後）</text>
+        <text x="250" y="504" text-anchor="middle" fill="#9ca3af" font-size="10.5">チェック・ベット・コール・レイズ　から選択</text>
+        <text x="250" y="517" text-anchor="middle" fill="#ef4444" font-size="10">▶ フォールドなら相手の勝ち・即終了</text>
+        <line x1="250" y1="524" x2="250" y2="532" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- SHOWDOWN -->
+        <rect x="75" y="534" width="350" height="44" rx="8" fill="#1e1033" stroke="#a78bfa" stroke-width="2"/>
+        <text x="250" y="552" text-anchor="middle" fill="#c4b5fd" font-size="12" font-weight="bold">🏆 ショーダウン（手役比較）</text>
+        <text x="250" y="569" text-anchor="middle" fill="#9ca3af" font-size="10.5">双方の手札を公開。7枚から最強の5枚を選んで比較</text>
+        <line x1="250" y1="578" x2="250" y2="586" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- WINNER -->
+        <rect x="75" y="588" width="350" height="46" rx="8" fill="#0a2a14" stroke="#22c55e" stroke-width="2"/>
+        <text x="250" y="606" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="bold">✓ 役が強い方がポットを全額獲得！</text>
+        <text x="250" y="621" text-anchor="middle" fill="#6b7280" font-size="10">同じ役 → 数字が大きい方の勝ち　完全に同じ → 山分け（引き分け）</text>
+        <line x1="250" y1="634" x2="250" y2="642" stroke="#4b5563" stroke-width="2" marker-end="url(#fa2)"/>
+
+        <!-- NEXT -->
+        <rect x="110" y="644" width="280" height="32" rx="16" fill="#1d4ed8"/>
+        <text x="250" y="665" text-anchor="middle" fill="white" font-size="13" font-weight="bold">🔄 次のハンドへ（繰り返し）</text>
+      </svg>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+// ===== CONSTANTS =====
+const HAND_INFO={'ロイヤルフラッシュ':{emoji:'👑',short:'同じマークのA〜10 — 最強！'},'ストレートフラッシュ':{emoji:'🌟',short:'同じマークで5枚連続'},'フォーカード':{emoji:'🔥',short:'同じ数字が4枚'},'フルハウス':{emoji:'💎',short:'3枚+ペアの組み合わせ'},'フラッシュ':{emoji:'🎴',short:'同じマークが5枚'},'ストレート':{emoji:'📈',short:'数字が5枚連続'},'スリーカード':{emoji:'🎯',short:'同じ数字が3枚'},'ツーペア':{emoji:'👫',short:'ペアが2組'},'ワンペア':{emoji:'🤝',short:'同じ数字が2枚'},'ハイカード':{emoji:'📋',short:'役なし — 一番大きい数字で勝負'}};
+const PHASE_INFO={preflop:{name:'プリフロップ',desc:'手札2枚だけの状態'},flop:{name:'フロップ',desc:'共有カード3枚が公開されました'},turn:{name:'ターン',desc:'4枚目の共有カードが公開'},river:{name:'リバー',desc:'最後の5枚目が公開！最終勝負'},showdown:{name:'ショーダウン',desc:'お互いの手を見せて比べます'}};
+const SUITS=['♠','♥','♦','♣'],VALUES=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const RED=new Set(['♥','♦']);
+const SB=10,BB=20;
+
+// ===== DECK =====
+function mkDeck(){const d=[];for(const s of SUITS)for(let i=0;i<VALUES.length;i++)d.push({suit:s,value:VALUES[i],rank:i+2});return d;}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+// ===== HAND EVAL =====
+const HN=['ハイカード','ワンペア','ツーペア','スリーカード','ストレート','フラッシュ','フルハウス','フォーカード','ストレートフラッシュ','ロイヤルフラッシュ'];
+function eval5(c){
+  const r=c.map(x=>x.rank).sort((a,b)=>b-a),s=c.map(x=>x.suit);
+  const iF=s.every(x=>x===s[0]);let iS=false,sH=0;
+  if(new Set(r).size===5){if(r[0]-r[4]===4){iS=true;sH=r[0];}if(r[0]===14&&r[1]===5&&r[2]===4&&r[3]===3&&r[4]===2){iS=true;sH=5;}}
+  const rc={};for(const x of r)rc[x]=(rc[x]||0)+1;
+  const en=Object.entries(rc).sort((a,b)=>b[1]-a[1]||b[0]-a[0]),ct=en.map(e=>+e[1]),bc=en.map(e=>+e[0]);
+  let cat,tb;
+  if(iF&&iS){cat=sH===14?9:8;tb=[sH];}else if(ct[0]===4){cat=7;tb=bc;}else if(ct[0]===3&&ct[1]===2){cat=6;tb=bc;}else if(iF){cat=5;tb=r;}else if(iS){cat=4;tb=[sH];}else if(ct[0]===3){cat=3;tb=bc;}else if(ct[0]===2&&ct[1]===2){cat=2;tb=bc;}else if(ct[0]===2){cat=1;tb=bc;}else{cat=0;tb=r;}
+  while(tb.length<5)tb.push(0);
+  let score=cat;for(const v of tb)score=score*100+v;
+  return{cat,name:HN[cat],score};
+}
+function bestHand(cards){
+  if(cards.length<5)return{cat:-1,name:'',score:0};
+  let best=null;const n=cards.length;
+  for(let a=0;a<n-4;a++)for(let b=a+1;b<n-3;b++)for(let cc=b+1;cc<n-2;cc++)for(let d=cc+1;d<n-1;d++)for(let e=d+1;e<n;e++){
+    const rr=eval5([cards[a],cards[b],cards[cc],cards[d],cards[e]]);
+    if(!best||rr.score>best.score)best=rr;
+  }
+  return best;
+}
+const CS=[0.10,0.28,0.45,0.60,0.70,0.80,0.88,0.94,0.98,1.0];
+function hStr(cards){const h=bestHand(cards);return h.cat<0?0:CS[h.cat];}
+function hcStr(cards){
+  const r1=Math.max(cards[0].rank,cards[1].rank),r2=Math.min(cards[0].rank,cards[1].rank);
+  const suited=cards[0].suit===cards[1].suit,paired=r1===r2;
+  if(paired){if(r1>=13)return 0.92;if(r1>=10)return 0.80;if(r1>=7)return 0.65;return 0.48;}
+  let base;
+  if(r1===14){if(r2>=13)base=0.84;else if(r2>=12)base=0.73;else if(r2>=11)base=0.65;else if(r2>=10)base=0.58;else base=0.44;}
+  else if(r1===13){base=r2>=12?0.63:r2>=11?0.55:0.42;}
+  else if(r1===12){base=r2>=11?0.55:0.40;}
+  else{base=Math.max(0.20,0.40-(r1-r2)*0.06);}
+  if(suited)base+=0.05;return Math.min(0.95,base);
+}
+
+// ===== SUPPORT =====
+function estWin(myHand,comm){
+  if(!myHand||myHand.length<2)return 50;
+  const used=new Set([...myHand.map(c=>c.suit+c.value),...comm.map(c=>c.suit+c.value)]);
+  const pool=mkDeck().filter(c=>!used.has(c.suit+c.value));
+  let wins=0,ties=0;
+  for(let i=0;i<260;i++){const d=shuffle(pool);let idx=0;const aiC=[d[idx++],d[idx++]];const sc=[...comm];while(sc.length<5)sc.push(d[idx++]);const ph=bestHand([...myHand,...sc]);const ah=bestHand([...aiC,...sc]);if(ph.score>ah.score)wins++;else if(ph.score===ah.score)ties++;}
+  return Math.round((wins+ties*0.5)/260*100);
+}
+function dcPct(outs,tocome,commLen){
+  const unk=52-2-2-commLen;if(tocome<=0||unk<=0)return 0;
+  if(tocome===1)return Math.round(outs/unk*100);
+  return Math.round((1-((unk-outs)/unk)*((unk-outs-1)/(unk-1)))*100);
+}
+function detectDraws(myHand,comm){
+  const all=[...myHand,...comm];if(all.length<2)return[];
+  const tocome=5-comm.length;if(tocome<=0)return[];
+  const draws=[],handNow=bestHand(all);
+  const sc={};for(const c of all)sc[c.suit]=(sc[c.suit]||0)+1;
+  const topSC=Math.max(...Object.values(sc));
+  if(topSC===4&&handNow.cat<5){
+    const ts=Object.entries(sc).find(([,v])=>v===4)[0];
+    const sn={'♠':'スペード','♥':'ハート','♦':'ダイヤ','♣':'クラブ'}[ts];
+    draws.push({icon:'🎴',name:'フラッシュドロー',outs:9,pct:dcPct(9,tocome,comm.length),tocome,plain:sn+'のカードがあと1枚来れば完成！（残り9枚）'});
+  }
+  const rS=new Set(all.map(c=>c.rank));if(rS.has(14))rS.add(1);
+  let hasO=false,hasG=false;
+  if(handNow.cat<4){
+    for(let low=1;low<=10;low++){const w=[low,low+1,low+2,low+3,low+4],hits=w.filter(r=>rS.has(r)).length;if(hits===4){const m=w.find(r=>!rS.has(r));if(m===low||m===low+4)hasO=true;else hasG=true;}}
+    if(hasO)draws.push({icon:'🔗',name:'ストレートドロー（両側）',outs:8,pct:dcPct(8,tocome,comm.length),tocome,plain:'両側のどちらかが来れば5枚連続になります（残り8枚）'});
+    else if(hasG)draws.push({icon:'🎯',name:'ストレートドロー（内側）',outs:4,pct:dcPct(4,tocome,comm.length),tocome,plain:'間の1枚が来れば5枚連続になります（残り4枚）'});
+  }
+  if(handNow.cat<1&&comm.length>=3){const pR=myHand.map(c=>c.rank),cR=comm.map(c=>c.rank),outs=pR.filter(r=>!cR.includes(r)).length*3;if(outs>0)draws.push({icon:'🤝',name:'ペアドロー',outs,pct:dcPct(outs,tocome,comm.length),tocome,plain:'手札と同じ数字が来ればペアになります（残り'+outs+'枚）'});}
+  if(handNow.cat===1&&comm.length>=3)draws.push({icon:'🎰',name:'スリーカードドロー',outs:2,pct:dcPct(2,tocome,comm.length),tocome,plain:'ペアの数字があと1枚来れば3枚そろいます（残り2枚）'});
+  return draws;
+}
+function getWinBasis(myHand,comm){
+  if(!myHand||myHand.length<2)return null;
+  const vn=r=>VALUES[r-2];
+  if(comm.length===0){
+    // Preflop: describe hole cards
+    const r1=Math.max(myHand[0].rank,myHand[1].rank),r2=Math.min(myHand[0].rank,myHand[1].rank);
+    const suited=myHand[0].suit===myHand[1].suit,paired=r1===r2;
+    let desc;
+    if(paired)desc='ポケットペア（'+vn(r1)+' - '+vn(r1)+'）手札が同じ数字';
+    else desc='手札 '+vn(r1)+' と '+vn(r2)+(suited?' ／ 同じマーク':'');
+    return{hand:desc,draws:null,phase:'プリフロップ'};
+  }
+  const all=[...myHand,...comm];
+  const ev=bestHand(all);
+  if(!ev||ev.cat<0)return null;
+  // Build hand detail string
+  const rc={};for(const c of all)rc[c.rank]=(rc[c.rank]||0)+1;
+  const pairs=Object.entries(rc).filter(([,v])=>v>=2).sort((a,b)=>b[1]-a[1]||b[0]-a[0]);
+  let handDetail=ev.name;
+  if(ev.cat===1&&pairs.length>0)handDetail='ワンペア（'+vn(+pairs[0][0])+'のペア）';
+  else if(ev.cat===2&&pairs.length>=2)handDetail='ツーペア（'+vn(+pairs[0][0])+'と'+vn(+pairs[1][0])+'）';
+  else if(ev.cat===3&&pairs.length>0)handDetail='スリーカード（'+vn(+pairs[0][0])+'が3枚）';
+  else if(ev.cat===6&&pairs.length>=2)handDetail='フルハウス（'+vn(+pairs[0][0])+'×3＋'+vn(+pairs[1][0])+'×2）';
+  else if(ev.cat===7&&pairs.length>0)handDetail='フォーカード（'+vn(+pairs[0][0])+'が4枚）';
+  const draws=detectDraws(myHand,comm);
+  const drawDesc=draws.length>0?draws.map(d=>d.name+'('+d.pct+'%)').join('、'):null;
+  return{hand:handDetail,draws:drawDesc,phase:null};
+}
+function getTip(myHand,comm,currentBet,myBet,pot){
+  if(!myHand||myHand.length<2)return null;
+  const all=[...myHand,...comm];
+  const str=comm.length===0?hcStr(myHand):hStr(all);
+  const handNow=bestHand(all),draws=detectDraws(myHand,comm);
+  const toCall=Math.max(0,currentBet-myBet),canCheck=toCall===0;
+  const potOdds=toCall>0?Math.round(toCall/(pot+toCall)*100):0;
+  if(str>=0.88||handNow.cat>=6)return{icon:'🔥',color:'#22c55e',main:'とても強い手です！',reason:canCheck?'レイズしてポットを大きくしましょう。':'積極的にレイズしましょう。'};
+  if(str>=0.68||handNow.cat>=4)return{icon:'💪',color:'#86efac',main:'強い手です！',reason:canCheck?'チェックでもよいですがレイズで稼ぐチャンスです。':'コールかレイズが有利。'};
+  if(handNow.cat===1)return{icon:'🤝',color:'#a3e635',main:'ワンペアです！',reason:canCheck?'チェックして次のカードを見ましょう。相手が強いベットをしたら注意。':'コールは有利。大きなレイズには慎重に。'};
+  if(str>=0.55||handNow.cat>=2)return{icon:'😊',color:'#a3e635',main:'まずまずの手です',reason:canCheck?'チェックして次のカードを待ちましょう。':'小さなコールならOK。'};
+  if(draws.length>0){const d=draws[0];if(d.pct>=30)return{icon:'⚡',color:'#fbbf24',main:'役を作るチャンスがあります！（'+d.name+'）',reason:'完成率'+d.pct+'%。'+(potOdds>0&&potOdds<d.pct?'コールする価値があります。':'コールして待ちましょう。')};return{icon:'🎲',color:'#f59e0b',main:d.name+'中（完成率'+d.pct+'%）',reason:'完成率はやや低め。コストが少なければ試しても。'};}
+  if(str>=0.40)return{icon:'😐',color:'#94a3b8',main:'弱い〜中程度の手です',reason:canCheck?'チェックして様子を見ましょう。':'大きなベットにはフォールドも検討。'};
+  return{icon:'❄️',color:'#f87171',main:'弱い手です',reason:canCheck?'チェックして次のカードを待ちましょう。':'相手のベットにはフォールドが安全です。'};
+}
+
+
+// ===== SETTINGS & DIFFICULTY =====
+const gameSettings={difficulty:'normal',cutIn:true,numPlayers:2,autoFoldSkip:true};
+const DIFF={
+  easy:{bluff:0.03,boost:-0.15,label:'😊 かんたん'},
+  normal:{bluff:0.12,boost:0,label:'😐 ふつう'},
+  hard:{bluff:0.22,boost:0.13,label:'😈 むずかしい'}
+};
+function openSettings(){updateSettingsUI();document.getElementById('settingsModal').classList.add('open');}
+function closeSettings(){document.getElementById('settingsModal').classList.remove('open');}
+function updateSettingsUI(){
+  const t=document.getElementById('cutinToggle');if(t)t.className='toggle-sw'+(gameSettings.cutIn?' on':'');
+  const f=document.getElementById('foldSkipToggle');if(f)f.className='toggle-sw'+(gameSettings.autoFoldSkip?' on':'');
+}
+function toggleCutIn(){gameSettings.cutIn=!gameSettings.cutIn;updateSettingsUI();}
+function toggleFoldSkip(){gameSettings.autoFoldSkip=!gameSettings.autoFoldSkip;updateSettingsUI();}
+
+// ===== CUT-IN SYSTEM =====
+// Flavor texts for each action (AI)
+const AI_FLAVOR={
+  fold:['💭 この勝負は諦めた...','😤 今回は引いておこう','🙈 次のチャンスに賭ける','🤐 これ以上は無理だ'],
+  check:['🤔 様子見だ...','😏 まだ動く必要はない','🎭 手の内を明かさない','🧘 ここは慎重に'],
+  call:['😤 ついてきた！','💪 受けて立つ！','🎰 ここは乗るしかない','😈 逃さないぞ'],
+  raise:['😈 プレッシャーをかける！','🔥 大きく出た！','⚡ 攻めの一手！','👊 強気でいく！']
+};
+// Flavor texts for player
+const MY_FLAVOR={
+  fold:['🗑️ 手を引いた...','💨 ここは降りよう','😮‍💨 次のハンドに集中'],
+  check:['✋ パス — 様子を見る','🧘 チェック、余裕を見せる','🙂 ここは無料でパス'],
+  call:['📞 追いかける！','💼 ついていくしかない','🤜 受けて立つ！'],
+  raise:['⬆️ 攻めに行く！','🎯 ここで畳み掛ける！','🔥 プレッシャーをかけろ！']
+};
+function pickFlavor(map,key){const arr=map[key]||[];return arr[Math.floor(Math.random()*arr.length)]||'';}
+
+let cutinResolve=null,cutinTimer=null;
+// avatar: emoji, actor: label, verb: action text, amount: chip text, flavor: flavor text, isPlayer: bool
+function showCutin({avatar,actor,verb,amount,flavor,isPlayer}){
+  return new Promise(resolve=>{
+    if(!gameSettings.cutIn){resolve();return;}
+    cutinResolve=resolve;
+    const toast=document.getElementById('cutinToast');
+    document.getElementById('cutinAvatar').textContent=avatar||'🃏';
+    document.getElementById('cutinActor').textContent=actor||'';
+    document.getElementById('cutinVerb').textContent=verb||'';
+    document.getElementById('cutinAmount').textContent=amount||'';
+    document.getElementById('cutinFlavor').textContent=flavor||'';
+    // Highlight color based on action
+    const borderMap={fold:'#ef4444',check:'#6b7280',call:'#2563eb',raise:'#16a34a',player:'#6366f1'};
+    const bKey=isPlayer?'player':verb&&verb.includes('フォールド')?'fold':verb&&verb.includes('チェック')?'check':verb&&verb.includes('コール')?'call':'raise';
+    toast.style.borderColor=borderMap[bKey]||'#374151';
+    // Progress bar
+    const bar=document.getElementById('cutinProgFill');
+    const dur=isPlayer?3000:4500;
+    if(bar){bar.style.transition='none';bar.style.width='100%';bar.offsetHeight;bar.style.transition=`width ${dur/1000}s linear`;bar.style.width='0%';}
+    toast.classList.add('show');
+    if(cutinTimer)clearTimeout(cutinTimer);
+    cutinTimer=setTimeout(dismissCutin,dur);
+  });
+}
+function dismissCutin(){
+  if(cutinTimer){clearTimeout(cutinTimer);cutinTimer=null;}
+  document.getElementById('cutinToast').classList.remove('show');
+  if(cutinResolve){const r=cutinResolve;cutinResolve=null;r();}
+}
+
+// ===== MULTIPLAYER =====
+let peer=null,conn=null,isHost=false;
+let appState='menu'; // menu|lobby_host|lobby_join|waiting|game|disconnected
+let gameMode='ai'; // ai|online
+
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+
+function mpCreate(){
+  appState='lobby_host';
+  const code=genCode();
+  document.getElementById('handNum').textContent='';
+  renderLobbyHost(code,'PeerJSを起動中...',false);
+  try{
+    peer=new Peer('pkr-'+code.toLowerCase(),{debug:0});
+    peer.on('open',()=>{renderLobbyHost(code,'相手の接続を待っています',true);});
+    peer.on('connection',c=>{
+      conn=c;isHost=true;
+      setupConn();
+      renderLobbyHost(code,'相手が接続しました！ゲームを開始します...',true);
+      setTimeout(()=>startOnlineGame(),800);
+    });
+    peer.on('error',err=>{
+      if(err.type==='unavailable-id'){const nc=genCode();mpCreateWithCode(nc);}
+      else renderLobbyHost(code,'エラー: '+err.message,false);
+    });
+  }catch(e){renderLobbyHost(code,'PeerJS読込エラー。ページを再読み込みしてください。',false);}
+}
+
+function mpJoin(code){
+  if(!code||code.length<6){renderLobbyJoin('ルームコードを6文字入力してください','');return;}
+  appState='lobby_join';
+  renderLobbyJoin('接続中...','connecting');
+  try{
+    peer=new Peer({debug:0});
+    peer.on('open',()=>{
+      conn=peer.connect('pkr-'+code.toLowerCase(),{reliable:true});
+      setupConn();
+      renderLobbyJoin('接続中...','connecting');
+      setTimeout(()=>{
+        if(appState==='lobby_join')renderLobbyJoin('接続できません。コードを確認してください。','err');
+      },8000);
+    });
+    peer.on('error',()=>renderLobbyJoin('ルームが見つかりません: '+code,'err'));
+  }catch(e){renderLobbyJoin('PeerJS読込エラー。ページを再読み込みしてください。','err');}
+}
+
+function setupConn(){
+  conn.on('open',()=>{
+    if(!isHost){renderLobbyJoin('接続成功！ゲーム開始を待っています...','ok');}
+  });
+  conn.on('data',data=>{
+    if(data.type==='STATE'&&!isHost){
+      V=data.view;render();
+    }else if(data.type==='ACTION'&&isHost){
+      processGuestAction(data);
+    }
+  });
+  conn.on('close',()=>{
+    if(appState==='game'){
+      G.message='相手が切断しました';G.handOver=true;
+      if(isHost){computeHostV();render();}
+    }
+  });
+  conn.on('error',()=>{
+    if(appState==='game'){G.message='接続エラーが発生しました';render();}
+  });
+}
+
+function sendToGuest(){
+  if(conn&&conn.open)conn.send({type:'STATE',view:guestView()});
+}
+function guestView(){
+  return{
+    myHand:G.guestHand,
+    opponentHand:G.phase==='showdown'?G.hostHand:null,
+    community:G.community,pot:G.pot,
+    myChips:G.guestChips,opponentChips:G.hostChips,
+    myBet:G.guestBet,opponentBet:G.hostBet,
+    currentBet:G.currentBet,phase:G.phase,
+    myTurn:!G.hostTurn,handOver:G.handOver,
+    message:G.message,dealerIsMe:!G.dealerIsHost,
+    handCount:G.handCount,isOnline:true,gameOver:G.gameOver,gameWinner:G.gameWinner
+  };
+}
+function computeHostV(){
+  V={
+    myHand:G.hostHand,
+    opponentHand:G.phase==='showdown'?G.guestHand:null,
+    community:G.community,pot:G.pot,
+    myChips:G.hostChips,opponentChips:G.guestChips,
+    myBet:G.hostBet,opponentBet:G.guestBet,
+    currentBet:G.currentBet,phase:G.phase,
+    myTurn:G.hostTurn,handOver:G.handOver,
+    message:G.message,dealerIsMe:G.dealerIsHost,
+    handCount:G.handCount,isOnline:true,gameOver:G.gameOver,gameWinner:G.gameWinner
+  };
+}
+function broadcast(){computeHostV();sendToGuest();render();}
+
+// ===== GAME STATE =====
+let G={};
+let V={}; // current player's view
+
+function startOnlineGame(){
+  appState='game';gameMode='online';
+  G={hostChips:1000,guestChips:1000,dealerIsHost:true,handCount:0,phase:'idle',gameOver:false,gameWinner:''};
+  onlineNewHand();
+}
+
+function onlineNewHand(){
+  if(G.hostChips<=0){G.gameOver=true;G.gameWinner='相手';broadcast();return;}
+  if(G.guestChips<=0){G.gameOver=true;G.gameWinner='あなた';if(!isHost){G.gameWinner='相手';}broadcast();return;}
+  G.handCount++;
+  G.deck=shuffle(mkDeck());
+  G.hostHand=[G.deck.pop(),G.deck.pop()];
+  G.guestHand=[G.deck.pop(),G.deck.pop()];
+  G.community=[];G.pot=0;G.phase='preflop';G.message='';G.handOver=false;
+  const hSB=G.dealerIsHost;
+  G.hostBet=Math.min(hSB?SB:BB,G.hostChips);
+  G.guestBet=Math.min(hSB?BB:SB,G.guestChips);
+  G.hostChips-=G.hostBet;G.guestChips-=G.guestBet;
+  G.pot=G.hostBet+G.guestBet;G.currentBet=BB;
+  G.hostActed=false;G.guestActed=false;
+  G.hostTurn=G.dealerIsHost; // dealer(SB) acts first preflop
+  broadcast();
+}
+
+function processGuestAction(data){
+  if(G.handOver||G.hostTurn)return;
+  const toCall=Math.max(0,G.currentBet-G.guestBet);
+  if(data.action==='fold'){
+    G.guestActed=true;
+    onlineEndHand('host','相手がフォールドしました');
+    return;
+  }
+  if(data.action==='call'){
+    const toAdd=Math.min(toCall,G.guestChips);
+    G.pot+=toAdd;G.guestChips-=toAdd;G.guestBet+=toAdd;
+  }else if(data.action==='raise'){
+    const total=Math.min(data.amount,G.guestChips+G.guestBet);
+    const toAdd=total-G.guestBet;
+    G.pot+=toAdd;G.guestChips-=toAdd;G.guestBet=total;G.currentBet=total;
+    G.hostActed=false;
+  }
+  G.guestActed=true;G.hostTurn=true;
+  if(G.hostActed&&G.guestActed&&G.hostBet===G.guestBet){broadcast();setTimeout(onlineAdvance,700);}
+  else broadcast();
+}
+
+function onlineAct(action,amount){
+  if(!isHost){
+    // Guest sends action to host
+    if(conn&&conn.open)conn.send({type:'ACTION',action,amount});
+    V.myTurn=false;render();
+    return;
+  }
+  // Host acts
+  const toCall=Math.max(0,G.currentBet-G.hostBet);
+  if(action==='fold'){G.hostActed=true;onlineEndHand('guest','あなたがフォールドしました');return;}
+  if(action==='call'){const toAdd=Math.min(toCall,G.hostChips);G.pot+=toAdd;G.hostChips-=toAdd;G.hostBet+=toAdd;}
+  else if(action==='raise'){const total=Math.min(amount,G.hostChips+G.hostBet);const toAdd=total-G.hostBet;G.pot+=toAdd;G.hostChips-=toAdd;G.hostBet=total;G.currentBet=total;G.guestActed=false;}
+  G.hostActed=true;G.hostTurn=false;
+  if(G.hostActed&&G.guestActed&&G.hostBet===G.guestBet){broadcast();setTimeout(onlineAdvance,700);}
+  else broadcast();
+}
+
+function onlineAdvance(){
+  G.hostBet=G.guestBet=G.currentBet=0;G.hostActed=G.guestActed=false;
+  G.hostTurn=!G.dealerIsHost; // post-flop: non-dealer first
+  switch(G.phase){
+    case'preflop':G.phase='flop';G.community.push(G.deck.pop(),G.deck.pop(),G.deck.pop());G.message='フロップ：共有カード3枚が公開！';break;
+    case'flop':G.phase='turn';G.community.push(G.deck.pop());G.message='ターン：4枚目が公開！';break;
+    case'turn':G.phase='river';G.community.push(G.deck.pop());G.message='リバー：最後のカード！';break;
+    case'river':onlineShowdown();return;
+  }
+  broadcast();
+}
+
+function onlineShowdown(){
+  G.phase='showdown';G.handOver=true;
+  const ph=bestHand([...G.hostHand,...G.community]);
+  const gh=bestHand([...G.guestHand,...G.community]);
+  const cmp=ph.score-gh.score;
+  if(cmp>0){
+    G.hostChips+=G.pot;G.pot=0;
+    G.message='🎉 ホストの勝ち！ ('+ph.name+')';
+  }else if(cmp<0){
+    G.guestChips+=G.pot;G.pot=0;
+    G.message='🎉 ゲストの勝ち！ ('+gh.name+')';
+  }else{
+    const half=Math.floor(G.pot/2);G.hostChips+=half;G.guestChips+=G.pot-half;G.pot=0;
+    G.message='引き分け！ ('+ph.name+')';
+  }
+  G.dealerIsHost=!G.dealerIsHost;
+  broadcast();
+}
+
+function onlineEndHand(winner,msg){
+  G.handOver=true;
+  if(winner==='host')G.hostChips+=G.pot;else G.guestChips+=G.pot;
+  G.pot=0;G.message=msg;G.dealerIsHost=!G.dealerIsHost;broadcast();
+}
+
+// ===== AI MODE =====
+let AI_G={};
+function startAI(){
+  appState='game';gameMode='ai';
+  AI_G={playerChips:1000,aiChips:1000,dealerIsPlayer:true,handCount:0,phase:'idle',gameOver:false};
+  aiNewHand();
+}
+function aiNewHand(){
+  if(AI_G.playerChips<=0){AI_G.gameOver=true;AI_G.gameWinner='AI';renderAI();return;}
+  if(AI_G.aiChips<=0){AI_G.gameOver=true;AI_G.gameWinner='あなた';renderAI();return;}
+  AI_G.handCount++;
+  document.getElementById('handNum').textContent='ハンド #'+AI_G.handCount;
+  AI_G.deck=shuffle(mkDeck());
+  AI_G.playerHand=[AI_G.deck.pop(),AI_G.deck.pop()];
+  AI_G.aiHand=[AI_G.deck.pop(),AI_G.deck.pop()];
+  AI_G.community=[];AI_G.pot=0;AI_G.phase='preflop';AI_G.message='';AI_G.showAI=false;AI_G.handOver=false;
+  const pSB=AI_G.dealerIsPlayer;
+  AI_G.playerBet=Math.min(pSB?SB:BB,AI_G.playerChips);AI_G.aiBet=Math.min(pSB?BB:SB,AI_G.aiChips);
+  AI_G.playerChips-=AI_G.playerBet;AI_G.aiChips-=AI_G.aiBet;
+  AI_G.pot=AI_G.playerBet+AI_G.aiBet;AI_G.currentBet=BB;
+  AI_G.playerActed=false;AI_G.aiActed=false;AI_G.playerTurn=AI_G.dealerIsPlayer;
+  renderAI();if(!AI_G.playerTurn)setTimeout(aiDoAct,1800);
+}
+async function aiPlayerAct(action,amount){
+  if(!AI_G.playerTurn||AI_G.handOver)return;
+  const toCall=Math.max(0,AI_G.currentBet-AI_G.playerBet);
+  const canCheck=toCall===0;
+  const actKey=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
+  const verbMap={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbEmoji={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
+  let chipText='';
+  if(action==='fold'){aiEnd('ai','あなたが手を捨てました');
+    await showCutin({avatar:'🗑️',actor:'あなたの行動',verb:'フォールド',amount:'',flavor:pickFlavor(MY_FLAVOR,'fold'),isPlayer:true});
+    return;}
+  if(action==='call'){const a=Math.min(toCall,AI_G.playerChips);AI_G.pot+=a;AI_G.playerChips-=a;AI_G.playerBet+=a;chipText=a+'チップ';}
+  else if(action==='raise'){const total=Math.min(amount,AI_G.playerChips+AI_G.playerBet);const a=total-AI_G.playerBet;AI_G.pot+=a;AI_G.playerChips-=a;AI_G.playerBet=total;AI_G.currentBet=total;AI_G.aiActed=false;chipText='→ 合計 '+total+'チップ';}
+  AI_G.playerActed=true;AI_G.playerTurn=false;
+  renderAI();
+  await showCutin({avatar:verbEmoji[actKey],actor:'あなたの行動',verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(MY_FLAVOR,actKey),isPlayer:true});
+  if(AI_G.playerActed&&AI_G.aiActed&&AI_G.playerBet===AI_G.aiBet){setTimeout(aiAdvance,900);}
+  else{setTimeout(aiDoAct,1600);}
+}
+async function aiDoAct(){
+  if(AI_G.handOver||AI_G.playerTurn)return;
+  const str=AI_G.phase==='preflop'?hcStr(AI_G.aiHand):hStr([...AI_G.aiHand,...AI_G.community]);
+  const toCall=Math.max(0,AI_G.currentBet-AI_G.aiBet),canCheck=toCall===0,rand=Math.random();
+  const diff=DIFF[gameSettings.difficulty]||DIFF.normal;
+  const bluff=rand<diff.bluff;
+  const eff=bluff?Math.min(str+0.35,1):Math.max(0,Math.min(1,str+diff.boost));
+  let action,raiseAmt;
+  if(eff>0.75){action=canCheck?(rand<0.75?'raise':'call'):(rand<0.65?'raise':'call');raiseAmt=AI_G.aiBet+toCall+BB*Math.round(1+eff*3);}
+  else if(eff>0.50){action=canCheck?(rand<0.25?'raise':'call'):(rand<0.15?'raise':'call');raiseAmt=AI_G.aiBet+toCall+BB*2;}
+  else if(eff>0.30){action=canCheck?'call':(toCall<=40?'call':(rand<0.35?'call':'fold'));}
+  else{action=canCheck?'call':(rand<0.18?'call':'fold');}
+  if(action==='raise'){raiseAmt=Math.min(raiseAmt||AI_G.currentBet+BB*2,AI_G.aiChips+AI_G.aiBet);if(raiseAmt<=AI_G.currentBet)action='call';}
+  const toCall2=Math.max(0,AI_G.currentBet-AI_G.aiBet);
+  // Cut-in text
+  // Determine action key for flavor
+  const actKey=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
+  const verbMap={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbEmoji={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
+  const chipText=action==='call'?Math.min(toCall2,AI_G.aiChips)+'チップ':action==='raise'?'→ 合計 '+Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet)+'チップ':'';
+  // Message for table
+  if(action==='fold')AI_G.message='AIが降りました';
+  else if(canCheck&&action==='call')AI_G.message='AIがチェックしました';
+  else if(action==='call')AI_G.message='AIがコール（'+toCall2+'チップ）';
+  else AI_G.message='AIがレイズ → 合計'+Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet)+'チップ';
+  renderAI();
+  await showCutin({avatar:verbEmoji[actKey],actor:'🤖 AI の行動',verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(AI_FLAVOR,actKey),isPlayer:false});
+  if(action==='fold'){aiEnd('player','AIが降りました');return;}
+  if(action==='call'){const a=Math.min(toCall2,AI_G.aiChips);AI_G.pot+=a;AI_G.aiChips-=a;AI_G.aiBet+=a;}
+  else if(action==='raise'){const total=Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet);const a=total-AI_G.aiBet;AI_G.pot+=a;AI_G.aiChips-=a;AI_G.aiBet=total;AI_G.currentBet=total;AI_G.playerActed=false;}
+  AI_G.aiActed=true;AI_G.playerTurn=true;
+  if(AI_G.playerActed&&AI_G.aiActed&&AI_G.playerBet===AI_G.aiBet){renderAI();setTimeout(aiAdvance,700);}
+  else renderAI();
+}
+function aiAdvance(){
+  AI_G.playerBet=AI_G.aiBet=AI_G.currentBet=0;AI_G.playerActed=AI_G.aiActed=false;AI_G.playerTurn=!AI_G.dealerIsPlayer;
+  switch(AI_G.phase){
+    case'preflop':AI_G.phase='flop';AI_G.community.push(AI_G.deck.pop(),AI_G.deck.pop(),AI_G.deck.pop());AI_G.message='フロップ：共有カード3枚が公開！';break;
+    case'flop':AI_G.phase='turn';AI_G.community.push(AI_G.deck.pop());AI_G.message='ターン：4枚目が公開！';break;
+    case'turn':AI_G.phase='river';AI_G.community.push(AI_G.deck.pop());AI_G.message='リバー：最後のカード！';break;
+    case'river':aiShowdown();return;
+  }
+  renderAI();if(!AI_G.playerTurn)setTimeout(aiDoAct,1800);
+}
+function aiShowdown(){
+  AI_G.phase='showdown';AI_G.showAI=true;AI_G.handOver=true;
+  const ph=bestHand([...AI_G.playerHand,...AI_G.community]),ah=bestHand([...AI_G.aiHand,...AI_G.community]);
+  const cmp=ph.score-ah.score;
+  if(cmp>0)aiEnd('player','🎉 あなたの勝ち！ ('+ph.name+')');
+  else if(cmp<0)aiEnd('ai','AIの勝ち ('+ah.name+')');
+  else{const half=Math.floor(AI_G.pot/2);AI_G.playerChips+=half;AI_G.aiChips+=AI_G.pot-half;AI_G.pot=0;AI_G.message='引き分け ('+ph.name+')';AI_G.dealerIsPlayer=!AI_G.dealerIsPlayer;renderAI();}
+}
+function aiEnd(winner,msg){
+  AI_G.handOver=true;AI_G.showAI=(AI_G.phase==='showdown');
+  if(winner==='player')AI_G.playerChips+=AI_G.pot;else AI_G.aiChips+=AI_G.pot;
+  AI_G.pot=0;AI_G.message=msg;AI_G.dealerIsPlayer=!AI_G.dealerIsPlayer;renderAI();
+}
+
+// ===== MULTI-PLAYER AI MODE (3-4 PLAYERS) =====
+let MP_G={};
+const MP_AI_NAMES=['🤖 Alpha','🤖 Beta','🤖 Gamma'];
+
+function startMP(){
+  appState='game';gameMode='mp';
+  const n=gameSettings.numPlayers;
+  const names=['あなた',...MP_AI_NAMES.slice(0,n-1)];
+  MP_G={
+    players:names.map((name,i)=>({name,chips:1000,hand:[],bet:0,acted:false,folded:false,isPlayer:i===0})),
+    pot:0,community:[],currentBet:0,phase:'preflop',dealerIdx:0,
+    activeIdx:0,handCount:0,gameOver:false,gameWinner:'',showdown:false,message:'',deck:[]
+  };
+  mpNewHand();
+}
+
+function mpNewHand(){
+  const mp=MP_G,n=mp.players.length;
+  const alive=mp.players.filter(p=>p.chips>0);
+  if(alive.length===1){mp.gameOver=true;mp.gameWinner=alive[0].name;renderMP();return;}
+  if(mp.players[0].chips<=0){mp.gameOver=true;mp.gameWinner='AIの勝ち';renderMP();return;}
+  mp.handCount++;
+  document.getElementById('handNum').textContent='ハンド #'+mp.handCount;
+  const deck=shuffle(mkDeck());
+  mp.players.forEach(p=>{p.hand=[deck.pop(),deck.pop()];p.bet=0;p.acted=false;p.folded=p.chips<=0;});
+  mp.community=[];mp.pot=0;mp.phase='preflop';mp.showdown=false;mp.message='';mp.currentBet=BB;
+  // SB = (dealer+1), BB = (dealer+2)
+  const sbIdx=(mp.dealerIdx+1)%n,bbIdx=(mp.dealerIdx+2)%n;
+  [sbIdx,bbIdx].forEach((idx,i)=>{
+    const p=mp.players[idx],amt=Math.min(i===0?SB:BB,p.chips);
+    p.bet+=amt;p.chips-=amt;mp.pot+=amt;
+  });
+  // Preflop: UTG = (bb+1)%n
+  mp.activeIdx=mpNextActive((bbIdx+1)%n);
+  mp.deck=deck;
+  renderMP();
+  if(!mp.players[mp.activeIdx].isPlayer)setTimeout(mpDoAI,1800);
+}
+
+function mpNextActive(startIdx){
+  const n=MP_G.players.length;
+  for(let i=0;i<n;i++){
+    const idx=(startIdx+i)%n;
+    if(!MP_G.players[idx].folded&&MP_G.players[idx].chips>0)return idx;
+  }
+  return startIdx;
+}
+
+async function mpPlayerAct(action,amount){
+  const mp=MP_G;
+  if(!mp.players[mp.activeIdx].isPlayer||mp.showdown)return;
+  const p=mp.players[0];
+  const toCall=Math.max(0,mp.currentBet-p.bet);
+  const canCheck=toCall===0;
+  const actKey=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
+  const verbMap={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbEmoji={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
+  let chipText='';
+  if(action==='fold'){p.folded=true;}
+  else if(action==='call'){const a=Math.min(toCall,p.chips);p.chips-=a;p.bet+=a;mp.pot+=a;chipText=a+'チップ';}
+  else if(action==='raise'){
+    const total=Math.min(amount,p.chips+p.bet);
+    const a=total-p.bet;p.chips-=a;p.bet=total;mp.pot+=a;mp.currentBet=total;chipText='→ 合計 '+total+'チップ';
+    mp.players.forEach((pl,i)=>{if(i!==0&&!pl.folded)pl.acted=false;});
+  }
+  p.acted=true;
+  renderMP();
+  await showCutin({avatar:verbEmoji[actKey],actor:'あなたの行動',verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(MY_FLAVOR,actKey),isPlayer:true});
+  // フォールド後スキップ：3人以上かつオンの場合は即ショーダウンへ飛ばす
+  if(action==='fold'&&gameSettings.autoFoldSkip&&mp.players.length>=3){
+    mp.showdown=true;
+    // 残りの参加者でベストハンド比較してポット分配
+    const remain=mp.players.filter(q=>!q.folded);
+    if(remain.length===1){
+      remain[0].chips+=mp.pot;mp.pot=0;
+      mp.message='🏆 '+remain[0].name+' の勝ち！（あなたがフォールドしました）';
+    }else{
+      // 全員のハンドを決めてポット山分け
+      let best=-1,winners=[];
+      remain.forEach(q=>{
+        // コミュニティカードが足りない場合はデッキから補完
+        const comm=[...mp.community];while(comm.length<5&&mp.deck.length)comm.push(mp.deck.pop());
+        const h=comm.length>=3?bestHand([...q.hand,...comm]):{cat:-1,score:-1,name:''};
+        q._score=h.score;q._hname=h.name;
+        if(h.score>best){best=h.score;winners=[q];}else if(h.score===best)winners.push(q);
+      });
+      const share=Math.floor(mp.pot/winners.length);winners.forEach(q=>q.chips+=share);mp.pot=0;
+      mp.message='⏭️ スキップ — '+(winners.length===1?'🏆 '+winners[0].name+' の勝ち！ ('+winners[0]._hname+')':'引き分け！');
+    }
+    mp.dealerIdx=(mp.dealerIdx+1)%mp.players.length;
+    renderMP();return;
+  }
+  mpCheckRound();
+}
+
+function mpCheckRound(){
+  const mp=MP_G,n=mp.players.length;
+  const active=mp.players.filter(p=>!p.folded);
+  // Only one left?
+  if(active.length===1){
+    active[0].chips+=mp.pot;mp.pot=0;
+    mp.message=(active[0].isPlayer?'🎉 あなたの勝ち！':'🏆 '+active[0].name+' の勝ち！')+' — みんながフォールドしました';
+    mp.showdown=true;renderMP();return;
+  }
+  // Round over if all active have acted and bets equal
+  const allDone=active.every(p=>p.acted||(p.chips===0&&p.bet<=mp.currentBet));
+  const allEqual=active.every(p=>p.bet>=mp.currentBet||p.chips===0);
+  if(allDone&&allEqual){renderMP();setTimeout(mpNextPhase,700);return;}
+  // Next player
+  let next=mp.activeIdx;
+  for(let i=1;i<=n;i++){
+    const idx=(mp.activeIdx+i)%n;
+    const p=mp.players[idx];
+    if(!p.folded&&!p.acted&&p.chips>0){next=idx;break;}
+  }
+  mp.activeIdx=next;
+  renderMP();
+  if(!mp.players[next].isPlayer)setTimeout(mpDoAI,1600);
+}
+
+async function mpDoAI(){
+  const mp=MP_G;
+  const ai=mp.players[mp.activeIdx];
+  if(!ai||ai.isPlayer||ai.folded||mp.showdown)return;
+  const str=mp.phase==='preflop'?hcStr(ai.hand):hStr([...ai.hand,...mp.community]);
+  const toCall=Math.max(0,mp.currentBet-ai.bet),canCheck=toCall===0,rand=Math.random();
+  const diff=DIFF[gameSettings.difficulty]||DIFF.normal;
+  const bluff=rand<diff.bluff;
+  const eff=bluff?Math.min(str+0.35,1):Math.max(0,Math.min(1,str+diff.boost));
+  let action,raiseAmt;
+  if(eff>0.75){action=canCheck?(rand<0.75?'raise':'call'):(rand<0.65?'raise':'call');raiseAmt=ai.bet+toCall+BB*Math.round(1+eff*3);}
+  else if(eff>0.50){action=canCheck?(rand<0.25?'raise':'call'):(rand<0.15?'raise':'call');raiseAmt=ai.bet+toCall+BB*2;}
+  else if(eff>0.30){action=canCheck?'call':(toCall<=40?'call':(rand<0.35?'call':'fold'));}
+  else{action=canCheck?'call':(rand<0.18?'call':'fold');}
+  if(action==='raise'){raiseAmt=Math.min(raiseAmt||mp.currentBet+BB*2,ai.chips+ai.bet);if(raiseAmt<=mp.currentBet)action='call';}
+  const toCall2=Math.max(0,mp.currentBet-ai.bet);
+  const actKeyM=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
+  const verbMapM={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbEmojiM={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
+  const chipTextM=action==='call'?Math.min(toCall2,ai.chips)+'チップ':action==='raise'?'→ 合計 '+Math.min(raiseAmt,ai.chips+ai.bet)+'チップ':'';
+  renderMP();
+  await showCutin({avatar:verbEmojiM[actKeyM],actor:ai.name+' の行動',verb:verbMapM[actKeyM],amount:chipTextM,flavor:pickFlavor(AI_FLAVOR,actKeyM),isPlayer:false});
+  if(action==='fold'){ai.folded=true;}
+  else if(action==='call'){const a=Math.min(toCall2,ai.chips);ai.chips-=a;ai.bet+=a;mp.pot+=a;}
+  else if(action==='raise'){
+    const total=Math.min(raiseAmt,ai.chips+ai.bet);const a=total-ai.bet;ai.chips-=a;ai.bet=total;mp.pot+=a;mp.currentBet=total;
+    mp.players.forEach(p=>{if(p!==ai&&!p.folded)p.acted=false;});
+  }
+  ai.acted=true;
+  mpCheckRound();
+}
+
+function mpNextPhase(){
+  const mp=MP_G,n=mp.players.length;
+  mp.players.forEach(p=>{if(!p.folded){p.bet=0;p.acted=false;}});
+  mp.currentBet=0;
+  mp.activeIdx=mpNextActive((mp.dealerIdx+1)%n);
+  switch(mp.phase){
+    case'preflop':mp.phase='flop';mp.community.push(mp.deck.pop(),mp.deck.pop(),mp.deck.pop());mp.message='フロップ：共有カード3枚が公開！';break;
+    case'flop':mp.phase='turn';mp.community.push(mp.deck.pop());mp.message='ターン：4枚目が公開！';break;
+    case'turn':mp.phase='river';mp.community.push(mp.deck.pop());mp.message='リバー：最後のカード！';break;
+    case'river':mpShowdown();return;
+  }
+  renderMP();
+  if(!mp.players[mp.activeIdx].isPlayer)setTimeout(mpDoAI,1800);
+}
+
+function mpShowdown(){
+  const mp=MP_G;
+  mp.phase='showdown';mp.showdown=true;
+  const active=mp.players.filter(p=>!p.folded);
+  let bestScore=-1,winners=[];
+  active.forEach(p=>{const h=bestHand([...p.hand,...mp.community]);p._score=h.score;p._hname=h.name;if(h.score>bestScore){bestScore=h.score;winners=[p];}else if(h.score===bestScore)winners.push(p);});
+  const share=Math.floor(mp.pot/winners.length);
+  winners.forEach(p=>p.chips+=share);mp.pot=0;
+  if(winners.length===1){
+    const w=winners[0];
+    mp.message=(w.isPlayer?'🎉 あなたの勝ち！':'🏆 '+w.name+' の勝ち！')+' ('+w._hname+')';
+  }else{mp.message='引き分け！ ('+winners.map(w=>w.name).join('、')+')';}
+  mp.dealerIdx=(mp.dealerIdx+1)%mp.players.length;
+  renderMP();
+}
+
+function renderMP(){
+  const mp=MP_G,root=document.getElementById('root');
+  if(mp.gameOver){
+    root.innerHTML='<div class="game-over-screen"><h2>'+(mp.gameWinner==='あなた'?'🎉':'💀')+'</h2><h2>'+mp.gameWinner+'の勝利！</h2>'+'<p>'+(mp.gameWinner==='あなた'?'おめでとうございます！':'残念…また挑戦しよう！')+'</p>'+'<button class="btn-primary" onclick="showAIMenu()">もう一度プレイ</button>'+'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:8px;">メニューへ戻る</button></div>';
+    return;
+  }
+  const pl=mp.players[0];
+  const toCall=Math.max(0,mp.currentBet-pl.bet),canCheck=toCall===0;
+  const isMyTurn=!!(mp.players[mp.activeIdx]&&mp.players[mp.activeIdx].isPlayer&&!mp.showdown);
+  const phInfo=PHASE_INFO[mp.phase]||{name:'',desc:''};
+  // Opponent cards top row
+  const oppHTML=mp.players.slice(1).map((p,i)=>{
+    const realIdx=i+1;
+    const isActive=mp.activeIdx===realIdx&&!mp.showdown;
+    const ev=(mp.showdown||p.folded)&&mp.community.length>=3?bestHand([...p.hand,...mp.community]):null;
+    const hInfo=ev?(HAND_INFO[ev.name]||{emoji:'🃏'}):null;
+    return'<div class="mp-opp-zone'+(p.folded?' folded':'')+(isActive?' active-turn':'')+'">'+
+      '<div class="mp-opp-name">'+p.name+(mp.dealerIdx===realIdx?' <span class="d-badge">D</span>':'')+'</div>'+
+      '<div class="hand-row" style="justify-content:center;margin:4px 0;">'+(mp.showdown&&!p.folded?p.hand.map(c=>cardH(c,false)).join(''):['',''].map(()=>'<div class="card back" style="width:38px;height:55px;font-size:20px;"></div>').join(''))+'</div>'+
+      (hInfo?'<div style="font-size:11px;color:#38bdf8;font-weight:600;margin:2px 0;">'+hInfo.emoji+' '+ev.name+'</div>':'')+
+      '<div class="mp-opp-chips">💰 '+p.chips+'</div>'+
+      '<div class="mp-opp-bet">'+(p.bet>0&&!mp.showdown?'ベット: '+p.bet:'')+'</div>'+
+      '<div class="mp-opp-status" style="color:'+(isActive?'#fbbf24':p.folded?'#6b7280':'#374151')+'">'+
+      (p.folded?'🗑️ フォールド':isActive?'⚡ 考え中':'')+'</div></div>';
+  }).join('');
+  // Player's hand eval
+  const myEval=pl.hand.length===2?(mp.community.length>=3?bestHand([...pl.hand,...mp.community]):(mp.community.length===0&&pl.hand[0].rank===pl.hand[1].rank?{cat:1,name:'ワンペア',score:100}:null)):null;
+  const tableHTML='<div class="table">'+
+    '<div class="mp-opponents">'+oppHTML+'</div>'+
+    '<hr class="divider">'+
+    '<div class="community-zone">'+
+    '<div class="phase-block"><div class="phase-name">'+phInfo.name+'</div><div class="phase-desc">'+phInfo.desc+'</div></div>'+
+    '<div class="community-cards">'+mp.community.map(c=>cardH(c,false)).join('')+Array(5-mp.community.length).fill('<div class="card placeholder"></div>').join('')+'</div>'+
+    '<div class="pot-display">🏆 ポット: '+mp.pot+'チップ</div>'+
+    '<div class="msg-box'+(mp.message&&mp.message.startsWith('🎉')?' win':'')+'">'+mp.message+'</div>'+
+    '</div>'+
+    '<hr class="divider">'+
+    '<div class="zone">'+hnH(myEval,!!myEval)+
+    '<div class="hand-row">'+pl.hand.map(c=>cardH(c,false)).join('')+'</div>'+
+    (pl.bet>0&&!mp.showdown?'<div class="bet-label">ベット中: '+pl.bet+'</div>':'')+
+    '<div class="chips-label">💰 '+pl.chips+'チップ</div>'+
+    '<div class="zone-label">あなた '+(mp.dealerIdx===0?'<span class="d-badge">D</span>':'')+'</div>'+
+    '</div></div>';
+  const actHTML='<div class="action-area">'+
+    (mp.showdown?'<button class="btn-next" onclick="mpNextHand()">次のハンドへ ▶</button>':
+    !isMyTurn?'<div class="waiting-label">⌛ '+(mp.players[mp.activeIdx]?mp.players[mp.activeIdx].name:'...')+' が考えています…</div>':
+    actionH(true,false,canCheck,toCall,pl.chips,mp.currentBet,pl.bet))+
+    '</div>';
+  const suppHTML=supportH(pl.hand,mp.community,mp.currentBet,pl.bet,mp.pot,mp.showdown);
+  root.innerHTML=tableHTML+actHTML+suppHTML;
+}
+
+function mpNextHand(){mpNewHand();}
+
+
+// ===== RENDER HELPERS =====
+function cardH(card,faceDown){
+  if(faceDown)return'<div class="card back"></div>';
+  const red=RED.has(card.suit);
+  return'<div class="card '+(red?'red':'black')+'"><div class="cv">'+card.value+'</div><div class="cs">'+card.suit+'</div><div class="cb">'+card.value+'</div></div>';
+}
+function p2c(p){return p>=60?'#22c55e':p>=40?'#fbbf24':p>=25?'#f97316':'#ef4444';}
+function dpC(p){return p>=30?'high':p>=18?'medium':'low';}
+function hnH(ev,show){
+  if(!show||!ev||ev.cat<0)return'<div class="hand-name-box"></div>';
+  const i=HAND_INFO[ev.name]||{emoji:'🃏',short:''};
+  return'<div class="hand-name-box"><div class="hand-name-main">'+i.emoji+' '+ev.name+'</div><div class="hand-name-desc">'+i.short+'</div></div>';
+}
+function supportH(myHand,comm,currentBet,myBet,pot,handOver){
+  if(handOver)return'';
+  const winPct=estWin(myHand,comm);
+  const draws=detectDraws(myHand,comm);
+  const tip=getTip(myHand,comm,currentBet,myBet,pot);
+  const toCall=Math.max(0,currentBet-myBet);
+  const potOddsPct=toCall>0?Math.round(toCall/(pot+toCall)*100):0;
+  const wc=p2c(winPct);
+  const basis=getWinBasis(myHand,comm);
+  let html='<div class="support-panel"><div class="support-header"><span class="support-title">📊 サポート情報</span><button class="btn-sm" onclick="openRules()">📖 用語・ルール</button></div>';
+  html+='<div class="stat-row"><label>あなたの勝率</label><div class="bar-track"><div class="bar-fill" style="width:'+winPct+'%;background:'+wc+'"></div></div><span class="bar-val" style="color:'+wc+'">'+winPct+'%</span></div>';
+  if(basis){let bHtml='<div class="win-basis"><span class="wb-label">根拠：</span><span class="wb-hand">'+basis.hand+'</span>';if(basis.draws)bHtml+='　＋　<span class="wb-draw">'+basis.draws+'</span>';bHtml+='<br><span style="font-size:10px;color:#4b5563">※ 残りのカードをランダムにシミュレーションして算出</span></div>';html+=bHtml;}
+  if(toCall>0){const ok=winPct>=potOddsPct;html+='<div class="odds-row"><span>コールに必要な勝率: <span class="odds-val">'+potOddsPct+'%</span></span><span class="odds-badge '+(ok?'odds-ok':'odds-warn')+'">'+(ok?'✓ 勝率'+winPct+'% ≥ '+potOddsPct+'% → コール有利':'✗ 勝率'+winPct+'% < '+potOddsPct+'% → 注意')+'</span></div>';}
+  if(draws.length>0){html+='<div class="draws-section"><div class="section-label">🎯 チャンスのカード</div>'+draws.map(d=>'<div class="draw-item"><span class="draw-icon">'+d.icon+'</span><div class="draw-info"><div class="draw-name">'+d.name+'</div><div class="draw-plain">'+d.plain+'</div></div><span class="draw-pct '+dpC(d.pct)+'">'+d.pct+'%<br><span style="font-size:9px;font-weight:400;color:#9ca3af">'+(d.tocome===2?'2枚で':'次1枚')+'</span></span></div>').join('')+'</div>';}
+  else if(comm.length>0)html+='<div class="no-data" style="margin:6px 0">現在ドローなし</div>';
+  if(tip)html+='<div class="tip-box" style="border-left-color:'+tip.color+'"><span class="tip-icon">'+tip.icon+'</span><div><div class="tip-main" style="color:'+tip.color+'">'+tip.main+'</div><div class="tip-reason">'+tip.reason+'</div></div></div>';
+  html+='</div>';
+  return html;
+}
+function actionH(myTurn,handOver,canCheck,toCall,myChips,currentBet,myBet){
+  const maxR=myChips+myBet,minR=Math.min(currentBet+BB,maxR),defR=Math.min(minR+BB,maxR);
+  if(handOver)return'<button class="btn-next" onclick="onNextHand()">次のハンドへ ▶</button>';
+  if(!myTurn)return'<div class="waiting-label">⌛ 相手が考えています…</div>';
+  // Situation label explaining current bet state
+  let sitLabel='';
+  if(canCheck&&myBet===0&&currentBet===0){
+    sitLabel='<div class="sit-label">💡 誰もベットしていません — チェック（タダでパス）またはベット（先に出す）できます</div>';
+  }else if(canCheck&&myBet>0){
+    sitLabel='<div class="sit-label">💡 あなたのベット '+myBet+'チップ と相手が揃っています — チェックで次のフェーズへ進めます</div>';
+  }else if(toCall>0){
+    sitLabel='<div class="sit-label">💡 あなた '+myBet+'チップ ／ 相手 '+currentBet+'チップ — 差額の <b>'+Math.min(toCall,myChips)+'チップ</b> を追加すればコールです</div>';
+  }
+  return sitLabel+'<div class="btn-row"><div class="btn-group"><button class="btn-fold" onclick="onFold()">フォールド</button><span class="btn-sublabel">手を捨てて降りる</span></div>'
+    +'<div class="btn-group"><button class="btn-call" onclick="onCall()">'+(canCheck?'チェック':'コール ('+Math.min(toCall,myChips)+')')+'</button><span class="btn-sublabel">'+(canCheck?'タダでパス（0チップ）':'差額を追加して合わせる')+'</span></div>'
+    +'<div class="btn-group"><button class="btn-raise" onclick="onRaise()"'+(maxR<=currentBet?' disabled':'')+'>レイズ</button><span class="btn-sublabel">上乗せして攻める</span></div></div>'
+    +(maxR>currentBet?'<div class="raise-ctrl"><label>レイズ額</label><input type="range" id="rs" min="'+minR+'" max="'+maxR+'" value="'+defR+'" step="'+BB+'" oninput="document.getElementById(\'rv\').textContent=this.value"><span class="raise-val" id="rv">'+defR+'</span><span style="font-size:11px;color:#6b7280">チップ</span></div>':'');
+}
+function tableH(myHand,opponentHand,community,phase,pot,myChips,opponentChips,myBet,opponentBet,dealerIsMe,myTurn,handOver,message,isOnline,opponentLabel){
+  const hasComm=community.length>=3;
+  const myEval=myHand&&myHand.length===2?(community.length>=3?bestHand([...myHand,...community]):(community.length===0&&myHand[0].rank===myHand[1].rank?{cat:1,name:'ワンペア',score:100}:null)):null;
+  const opEval=opponentHand&&hasComm?bestHand([...opponentHand,...community]):null;
+  const phInfo=PHASE_INFO[phase]||{name:'',desc:''};
+  const toCall=Math.max(0,(community.length>=0?0:0)); // just for display
+  return'<div class="table">'
+    +'<div class="zone">'
+    +'<div class="zone-label">'+(opponentLabel||'相手')+' '+(!dealerIsMe?'<span class="d-badge">D</span>':'')+(isOnline?'<span class="online-badge">🟢 オンライン</span>':'')+'</div>'
+    +'<div class="chips-label">💰 '+opponentChips.toLocaleString()+'チップ</div>'
+    +(opponentBet>0?'<div class="bet-label">ベット中: '+opponentBet+'</div>':'')
+    +'<div class="hand-row">'+(opponentHand?opponentHand.map(c=>cardH(c,false)).join(''):['',''].map(()=>'<div class="card back"></div>').join(''))+'</div>'
+    +hnH(opEval,!!opponentHand&&hasComm)
+    +'</div>'
+    +'<hr class="divider">'
+    +'<div class="community-zone">'
+    +'<div class="phase-block"><div class="phase-name">'+phInfo.name+'</div><div class="phase-desc">'+phInfo.desc+'</div></div>'
+    +'<div class="community-cards">'+community.map(c=>cardH(c,false)).join('')+Array(5-community.length).fill('<div class="card placeholder"></div>').join('')+'</div>'
+    +'<div class="pot-display">🏆 ポット: '+pot.toLocaleString()+'チップ</div>'
+    +'<div class="msg-box'+(message&&message.startsWith('🎉')?' win':'')+'">'+message+'</div>'
+    +'</div>'
+    +'<hr class="divider">'
+    +'<div class="zone">'
+    +hnH(myEval,!!myEval&&myHand&&myHand.length===2)
+    +'<div class="hand-row">'+(myHand?myHand.map(c=>cardH(c,false)).join(''):'')+'</div>'
+    +(myBet>0?'<div class="bet-label">ベット中: '+myBet+'</div>':'')
+    +'<div class="chips-label">💰 '+myChips.toLocaleString()+'チップ</div>'
+    +'<div class="zone-label">あなた '+(dealerIsMe?'<span class="d-badge">D</span>':'')+'</div>'
+    +'</div>'
+    +'</div>';
+}
+
+// ===== RENDER FUNCTIONS =====
+function renderMenu(){
+  document.getElementById('handNum').textContent='';
+  document.getElementById('root').innerHTML=
+    '<div class="menu-screen">'
+    +'<h2>🃏 Texas Hold\'em</h2>'
+    +'<p>対戦モードを選んでください</p>'
+    +'<div class="menu-cards">'
+    +'<div class="menu-card" onclick="showAIMenu()"><div class="mc-icon">🤖</div><div class="mc-title">AI対戦</div><div class="mc-desc">人数・強さを選んで対戦</div></div>'
+    +'<div class="menu-card" onclick="showOnlineMenu()"><div class="mc-icon">🌐</div><div class="mc-title">オンライン対戦</div><div class="mc-desc">友達とリアルタイムで対戦</div></div>'
+    +'</div></div>';
+}
+
+function showAIMenu(){
+  document.getElementById('handNum').textContent='';
+  const d=gameSettings.difficulty,np=gameSettings.numPlayers;
+  document.getElementById('root').innerHTML=
+    '<div class="ai-menu">'
+    +'<h2 style="font-size:22px;font-weight:700;">🤖 AI対戦 設定</h2>'
+    +'<div class="diff-section">'
+    +'<div class="diff-label">👥 対戦人数</div>'
+    +'<div class="diff-row">'
+    +'<button class="diff-btn'+(np===2?' sel':'')+'" onclick="setPlayers(2)">🧑 1 vs 1<br><small style="font-weight:400;color:#9ca3af">あなた vs AI</small></button>'
+    +'<button class="diff-btn'+(np===3?' sel':'')+'" onclick="setPlayers(3)">🧑 vs 🤖×2<br><small style="font-weight:400;color:#9ca3af">3人対戦</small></button>'
+    +'<button class="diff-btn'+(np===4?' sel':'')+'" onclick="setPlayers(4)">🧑 vs 🤖×3<br><small style="font-weight:400;color:#9ca3af">4人対戦</small></button>'
+    +'</div>'
+    +'</div>'
+    +'<div class="diff-section">'
+    +'<div class="diff-label">💪 AIの強さ</div>'
+    +'<div class="diff-row">'
+    +'<button class="diff-btn'+(d==='easy'?' sel':'')+'" onclick="setDiff(\'easy\')">😊 かんたん<br><small style="font-weight:400;color:#9ca3af">初心者向け</small></button>'
+    +'<button class="diff-btn'+(d==='normal'?' sel':'')+'" onclick="setDiff(\'normal\')">😐 ふつう<br><small style="font-weight:400;color:#9ca3af">バランス型</small></button>'
+    +'<button class="diff-btn'+(d==='hard'?' sel':'')+'" onclick="setDiff(\'hard\')">😈 むずかしい<br><small style="font-weight:400;color:#9ca3af">上級者向け</small></button>'
+    +'</div>'
+    +'</div>'
+    +'<button class="btn-primary" onclick="startGame()" style="padding:13px 48px;font-size:16px;border-radius:14px;">ゲームスタート ▶</button>'
+    +'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:2px;">← 戻る</button>'
+    +'</div>';
+}
+function setDiff(d){gameSettings.difficulty=d;showAIMenu();}
+function setPlayers(n){gameSettings.numPlayers=n;showAIMenu();}
+function startGame(){
+  if(gameSettings.numPlayers>=3)startMP();
+  else startAI();
+}
+function showOnlineMenu(){
+  document.getElementById('root').innerHTML=
+    '<div class="lobby-screen">'
+    +'<h2>🌐 オンライン対戦</h2>'
+    +'<div class="menu-cards">'
+    +'<div class="menu-card" onclick="mpCreate()"><div class="mc-icon">🏠</div><div class="mc-title">ルームを作る</div><div class="mc-desc">コードを友達に共有</div></div>'
+    +'<div class="menu-card" onclick="showJoinUI()"><div class="mc-icon">🚪</div><div class="mc-title">ルームに入る</div><div class="mc-desc">コードを入力して参加</div></div>'
+    +'</div>'
+    +'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:8px;">← 戻る</button>'
+    +'</div>';
+}
+function showJoinUI(){
+  document.getElementById('root').innerHTML=
+    '<div class="lobby-screen">'
+    +'<h2>🚪 ルームに入る</h2>'
+    +'<p style="font-size:13px;color:#6b7280;text-align:center;">友達から受け取った6文字のコードを入力してください</p>'
+    +'<div class="input-group"><input id="codeInput" maxlength="6" placeholder="例：ABC123" oninput="this.value=this.value.toUpperCase()"></div>'
+    +'<button class="btn-primary" onclick="mpJoin(document.getElementById(\'codeInput\').value.trim())">接続する</button>'
+    +'<div class="status-box" id="joinStatus"></div>'
+    +'<button class="btn-secondary" onclick="showOnlineMenu()">← 戻る</button>'
+    +'</div>';
+}
+function renderLobbyHost(code,status,ready){
+  document.getElementById('root').innerHTML=
+    '<div class="lobby-screen">'
+    +'<h2>🏠 ルームを作成しました</h2>'
+    +'<div class="room-code-box">'
+    +'<div class="label">このコードを友達に共有してください</div>'
+    +'<div class="code">'+code+'</div>'
+    +'<div class="sublabel">友達がこのコードを入力して参加します</div>'
+    +'</div>'
+    +'<div class="status-box '+(ready?'ok':'')+'">'+status+'</div>'
+    +'<button class="btn-secondary" onclick="cleanupAndMenu()">← キャンセル</button>'
+    +'</div>';
+}
+function renderLobbyJoin(status,cls){
+  const el=document.getElementById('joinStatus');
+  if(el)el.className='status-box '+(cls||'');
+  if(el)el.textContent=status;
+}
+function cleanupAndMenu(){
+  if(peer){try{peer.destroy();}catch(e){}}
+  peer=null;conn=null;isHost=false;
+  renderMenu();
+}
+
+function renderAI(){
+  const g=AI_G;
+  if(g.gameOver){
+    document.getElementById('root').innerHTML='<div class="game-over-screen"><h2>'+(g.gameWinner==='あなた'?'🎉':'💀')+'</h2><h2>'+g.gameWinner+'の勝利！</h2><p>'+(g.gameWinner==='あなた'?'おめでとうございます！':'残念…また挑戦しよう！')+'</p><button class="btn-primary" onclick="renderMenu()">メニューへ戻る</button></div>';
+    return;
+  }
+  document.getElementById('handNum').textContent='ハンド #'+g.handCount;
+  const toCall=Math.max(0,g.currentBet-g.playerBet),canCheck=toCall===0;
+  const tH=tableH(g.playerHand,g.showAI?g.aiHand:null,g.community,g.phase,g.pot,g.playerChips,g.aiChips,g.playerBet,g.aiBet,g.dealerIsPlayer,g.playerTurn,g.handOver,g.message,false,'AI');
+  const aH=actionH(g.playerTurn,g.handOver,canCheck,toCall,g.playerChips,g.currentBet,g.playerBet);
+  const sH=supportH(g.playerHand,g.community,g.currentBet,g.playerBet,g.pot,g.handOver);
+  document.getElementById('root').innerHTML=tH+'<div class="action-area">'+aH+'</div>'+sH;
+}
+
+function render(){
+  const v=V;
+  if(!v||!v.myHand)return;
+  if(v.gameOver){
+    const iWon=v.gameWinner==='あなた';
+    document.getElementById('root').innerHTML='<div class="game-over-screen"><h2>'+(iWon?'🎉':'💀')+'</h2><h2>'+v.gameWinner+'の勝利！</h2><p>'+(iWon?'おめでとうございます！':'残念…また挑戦しよう！')+'</p>'+(isHost?'<button class="btn-primary" onclick="startOnlineGame()">もう一度プレイ</button>':'<div style="font-size:13px;color:#6b7280">ホストが次のゲームを開始するのを待っています…</div>')+'<button class="btn-secondary" onclick="cleanupAndMenu()" style="margin-top:8px;">メニューへ戻る</button></div>';
+    return;
+  }
+  document.getElementById('handNum').textContent='ハンド #'+(v.handCount||'');
+  const toCall=Math.max(0,v.currentBet-v.myBet),canCheck=toCall===0;
+  const pingBar='<div class="ping-bar"><span class="ping-dot"></span>オンライン対戦中</div>';
+  const tH=tableH(v.myHand,v.opponentHand,v.community,v.phase,v.pot,v.myChips,v.opponentChips,v.myBet,v.opponentBet,v.dealerIsMe,v.myTurn,v.handOver,v.message,true,'相手');
+  const aH=actionH(v.myTurn,v.handOver,canCheck,toCall,v.myChips,v.currentBet,v.myBet);
+  const sH=supportH(v.myHand,v.community,v.currentBet,v.myBet,v.pot,v.handOver);
+  document.getElementById('root').innerHTML=pingBar+tH+'<div class="action-area">'+aH+'</div>'+sH;
+}
+
+// ===== ACTION HANDLERS =====
+function onFold(){
+  if(gameMode==='ai')aiPlayerAct('fold');
+  else if(gameMode==='mp')mpPlayerAct('fold');
+  else onlineAct('fold');
+}
+function onCall(){
+  if(gameMode==='ai')aiPlayerAct('call');
+  else if(gameMode==='mp')mpPlayerAct('call');
+  else onlineAct('call');
+}
+function onRaise(){
+  const v=parseInt(document.getElementById('rs').value);
+  if(gameMode==='ai')aiPlayerAct('raise',v);
+  else if(gameMode==='mp')mpPlayerAct('raise',v);
+  else onlineAct('raise',v);
+}
+function onNextHand(){
+  if(gameMode==='ai')aiNewHand();
+  else if(isHost)onlineNewHand();
+  else{document.querySelector('.btn-next').textContent='ホストが次のハンドを開始します…';document.querySelector('.btn-next').disabled=true;}
+}
+
+// ===== MODAL =====
+function switchTab(e,id){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');e.target.classList.add('active');}
+function openRules(){document.getElementById('rulesModal').classList.add('open');}
+function closeRules(){document.getElementById('rulesModal').classList.remove('open');}
+
+// ===== INIT =====
+renderMenu();
+</script>
+
+<!-- CUT-IN TOAST -->
+<div id="cutinToast" class="cutin-toast" onclick="dismissCutin()">
+  <div class="cutin-inner">
+    <div class="cutin-avatar" id="cutinAvatar"></div>
+    <div class="cutin-body">
+      <div class="cutin-actor" id="cutinActor"></div>
+      <div class="cutin-verb" id="cutinVerb"></div>
+      <div class="cutin-amount" id="cutinAmount"></div>
+      <div class="cutin-flavor" id="cutinFlavor"></div>
+    </div>
+  </div>
+  <div class="cutin-prog"><div class="cutin-prog-fill" id="cutinProgFill"></div></div>
+  <div class="cutin-dismiss">タップして閉じる</div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="modal-overlay" onclick="closeSettings()">
+  <div class="modal-box" onclick="event.stopPropagation()" style="max-width:380px;">
+    <h2>⚙️ 設定 <button class="modal-close" onclick="closeSettings()">✕</button></h2>
+    <p class="modal-sub">ゲームの表示設定を変更できます</p>
+    <div class="cutin-toggle-row" onclick="toggleCutIn()">
+      <div style="flex:1">
+        <div class="cutin-toggle-label">🎬 アクション表示（カットイン）</div>
+        <div class="cutin-toggle-sub">行動内容をポップアップで表示。オフで自動スキップ。</div>
+      </div>
+      <div class="toggle-sw" id="cutinToggle"></div>
+    </div>
+    <div class="cutin-toggle-row" onclick="toggleFoldSkip()" style="margin-top:8px;">
+      <div style="flex:1">
+        <div class="cutin-toggle-label">⏭️ フォールド後スキップ（多人数）</div>
+        <div class="cutin-toggle-sub">3人以上の対戦で自分がフォールドしたら残りのAI同士の展開を省略して次のハンドへ。</div>
+      </div>
+      <div class="toggle-sw" id="foldSkipToggle"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
