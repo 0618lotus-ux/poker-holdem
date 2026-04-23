@@ -177,15 +177,15 @@
     @keyframes ping{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
     /* CUT-IN TOAST */
-    .cutin-toast{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-130%);z-index:400;background:#1a2234;border:1px solid #374151;border-radius:12px;padding:8px 12px 7px;width:230px;max-width:calc(100vw - 24px);box-shadow:0 4px 20px rgba(0,0,0,0.55);pointer-events:none;opacity:0;transition:transform 0.28s cubic-bezier(0.34,1.4,0.64,1),opacity 0.2s ease;}
+    .cutin-toast{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-130%);z-index:400;background:#1a2234;border:1px solid #374151;border-radius:10px;padding:6px 10px 5px;width:190px;max-width:calc(100vw - 24px);box-shadow:0 4px 20px rgba(0,0,0,0.55);pointer-events:none;opacity:0;transition:transform 0.28s cubic-bezier(0.34,1.4,0.64,1),opacity 0.2s ease;}
     .cutin-toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto;cursor:pointer;}
     .cutin-inner{display:flex;align-items:center;gap:8px;}
-    .cutin-avatar{font-size:18px;flex-shrink:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border-radius:7px;}
+    .cutin-avatar{font-size:15px;flex-shrink:0;width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border-radius:6px;}
     .cutin-body{flex:1;min-width:0;}
-    .cutin-actor{font-size:9px;color:#6b7280;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:1px;}
-    .cutin-verb{font-size:14px;font-weight:700;color:#f9fafb;line-height:1.2;}
-    .cutin-amount{font-size:11px;color:#fbbf24;font-weight:600;margin-top:1px;}
-    .cutin-flavor{font-size:10px;color:#6b7280;margin-top:2px;line-height:1.3;}
+    .cutin-actor{font-size:8px;color:#6b7280;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:1px;}
+    .cutin-verb{font-size:12px;font-weight:700;color:#f9fafb;line-height:1.2;}
+    .cutin-amount{font-size:10px;color:#fbbf24;font-weight:600;margin-top:1px;}
+    .cutin-flavor{font-size:9px;color:#6b7280;margin-top:2px;line-height:1.3;}
     .cutin-prog{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;margin-top:7px;overflow:hidden;}
     .cutin-prog-fill{height:100%;background:#6366f1;border-radius:1px;width:100%;}
     .cutin-dismiss{font-size:8px;color:#374151;text-align:center;margin-top:4px;letter-spacing:0.5px;}
@@ -197,6 +197,8 @@
     .diff-btn{background:#1f2937;border:2px solid #374151;border-radius:14px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;color:#9ca3af;transition:all 0.2s;min-width:120px;}
     .diff-btn:hover{border-color:#6366f1;color:#f9fafb;transform:translateY(-2px);box-shadow:0 4px 16px rgba(99,102,241,0.2);}
     .diff-btn.sel{border-color:#6366f1;background:#312e81;color:#fff;transform:translateY(-2px);}
+    .lang-btn{background:none;border:1px solid #374151;font-size:15px;cursor:pointer;padding:3px 7px;border-radius:8px;transition:all 0.15s;margin-right:4px;}
+    .lang-btn:hover{background:#1f2937;transform:none;border-color:#4b5563;}
     /* SETTINGS GEAR */
     .settings-gear{background:none;border:1px solid #374151;color:#9ca3af;font-size:16px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all 0.15s;}
     .settings-gear:hover{color:#f9fafb;background:#1f2937;transform:none;border-color:#4b5563;}
@@ -217,13 +219,58 @@
     .mp-opp-chips{font-size:13px;color:#fbbf24;font-weight:600;}
     .mp-opp-bet{font-size:11px;color:#f97316;min-height:16px;margin-top:2px;}
     .mp-opp-status{font-size:11px;min-height:16px;margin-top:2px;}
+
+    /* ===== DOPAMINE SYSTEM ===== */
+    /* Confetti canvas */
+    #confettiCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:500;}
+
+    /* Streak badge */
+    .streak-badge{position:fixed;top:58px;right:12px;z-index:401;background:linear-gradient(135deg,#f59e0b,#ef4444);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:800;color:#fff;box-shadow:0 3px 12px rgba(239,68,68,0.5);transform:scale(0);transition:transform 0.35s cubic-bezier(0.34,1.5,0.64,1),opacity 0.3s;opacity:0;display:flex;align-items:center;gap:4px;}
+    .streak-badge.show{transform:scale(1);opacity:1;}
+
+    /* Achievement toast */
+    .ach-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(120%);z-index:450;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:14px;padding:10px 16px;min-width:220px;max-width:calc(100vw - 32px);box-shadow:0 6px 24px rgba(99,102,241,0.5);opacity:0;transition:transform 0.4s cubic-bezier(0.34,1.4,0.64,1),opacity 0.3s;pointer-events:none;text-align:center;}
+    .ach-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+    .ach-title{font-size:10px;color:rgba(255,255,255,0.7);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+    .ach-name{font-size:15px;font-weight:800;color:#fff;}
+    .ach-desc{font-size:11px;color:rgba(255,255,255,0.8);margin-top:2px;}
+
+    /* Chip countup */
+    .chip-gain{position:fixed;left:50%;transform:translateX(-50%);z-index:460;font-size:22px;font-weight:800;color:#22c55e;text-shadow:0 2px 8px rgba(0,0,0,0.6);pointer-events:none;opacity:0;transition:opacity 0.4s;white-space:nowrap;}
+    .chip-gain.pop{animation:chipPop 1.4s ease forwards;}
+    @keyframes chipPop{0%{opacity:0;transform:translateX(-50%) translateY(0) scale(0.7);}20%{opacity:1;transform:translateX(-50%) translateY(-10px) scale(1.15);}70%{opacity:1;transform:translateX(-50%) translateY(-30px) scale(1);}100%{opacity:0;transform:translateX(-50%) translateY(-55px) scale(0.9);}}
+
+    /* Big hand flash */
+    .bighand-flash{position:fixed;top:0;left:0;width:100%;height:100%;z-index:490;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;}
+    .bighand-flash.show{animation:bigFlash 1.8s ease forwards;}
+    @keyframes bigFlash{0%{opacity:0;}15%{opacity:1;}70%{opacity:1;}100%{opacity:0;}}
+    .bighand-inner{background:rgba(0,0,0,0.7);border-radius:20px;padding:20px 36px;text-align:center;border:2px solid #fbbf24;box-shadow:0 0 40px rgba(251,191,36,0.6);}
+    .bighand-emoji{font-size:52px;display:block;animation:spinIn 0.5s cubic-bezier(0.34,1.5,0.64,1);}
+    @keyframes spinIn{0%{transform:scale(0) rotate(-30deg);}100%{transform:scale(1) rotate(0deg);}}
+    .bighand-name{font-size:20px;font-weight:800;color:#fbbf24;margin-top:6px;}
+    .bighand-sub{font-size:13px;color:#d1d5db;margin-top:4px;}
+
+    /* Stats panel */
+    .stats-btn{background:#1f2937;border:1px solid #374151;border-radius:10px;padding:6px 12px;font-size:11px;color:#9ca3af;cursor:pointer;margin-top:8px;}
+    .stats-btn:hover{background:#374151;color:#f9fafb;}
+    .stats-modal{position:fixed;top:0;left:0;width:100%;height:100%;z-index:600;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+    .stats-modal.open{opacity:1;pointer-events:auto;}
+    .stats-box{background:#1f2937;border-radius:18px;padding:22px 20px;width:min(360px,calc(100vw-32px));max-height:80vh;overflow-y:auto;}
+    .stats-box h3{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+    .stat-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+    .stat-label{font-size:13px;color:#9ca3af;}
+    .stat-val{font-size:14px;font-weight:700;color:#f9fafb;}
+    .stat-val.green{color:#22c55e;}.stat-val.red{color:#ef4444;}.stat-val.gold{color:#fbbf24;}
+    .chart-wrap{margin-top:12px;}
+    .chart-label{font-size:11px;color:#6b7280;margin-bottom:6px;}
+    canvas#chipChart{width:100%;height:100px;display:block;}
   </style>
 </head>
 <body>
 <div class="wrap">
   <div class="header">
     <h1>🃏 Texas Hold'em</h1>
-    <span class="hand-num" id="handNum"></span><button class="settings-gear" onclick="openSettings()" title="設定">⚙️</button>
+    <span class="hand-num" id="handNum"></span><button class="lang-btn" id="langBtn" onclick="toggleLang()" title="Language">🇯🇵</button><button class="settings-gear" onclick="openSettings()" title="設定">⚙️</button>
   </div>
   <div id="root"></div>
 </div>
@@ -409,10 +456,287 @@
 <script>
 // ===== CONSTANTS =====
 const HAND_INFO={'ロイヤルフラッシュ':{emoji:'👑',short:'同じマークのA〜10 — 最強！'},'ストレートフラッシュ':{emoji:'🌟',short:'同じマークで5枚連続'},'フォーカード':{emoji:'🔥',short:'同じ数字が4枚'},'フルハウス':{emoji:'💎',short:'3枚+ペアの組み合わせ'},'フラッシュ':{emoji:'🎴',short:'同じマークが5枚'},'ストレート':{emoji:'📈',short:'数字が5枚連続'},'スリーカード':{emoji:'🎯',short:'同じ数字が3枚'},'ツーペア':{emoji:'👫',short:'ペアが2組'},'ワンペア':{emoji:'🤝',short:'同じ数字が2枚'},'ハイカード':{emoji:'📋',short:'役なし — 一番大きい数字で勝負'}};
-const PHASE_INFO={preflop:{name:'プリフロップ',desc:'手札2枚だけの状態'},flop:{name:'フロップ',desc:'共有カード3枚が公開されました'},turn:{name:'ターン',desc:'4枚目の共有カードが公開'},river:{name:'リバー',desc:'最後の5枚目が公開！最終勝負'},showdown:{name:'ショーダウン',desc:'お互いの手を見せて比べます'}};
+const PHASE_INFO_JA={preflop:{name:'プリフロップ',desc:'手札2枚だけの状態'},flop:{name:'フロップ',desc:'共有カード3枚が公開されました'},turn:{name:'ターン',desc:'4枚目の共有カードが公開'},river:{name:'リバー',desc:'最後の5枚目が公開！最終勝負'},showdown:{name:'ショーダウン',desc:'お互いの手を見せて比べます'}};
+const PHASE_INFO_EN={preflop:{name:'Pre-Flop',desc:'2 hole cards dealt'},flop:{name:'Flop',desc:'3 community cards revealed'},turn:{name:'Turn',desc:'4th community card revealed'},river:{name:'River',desc:'Final card! Last chance'},showdown:{name:'Showdown',desc:'Reveal hands and compare'}};
+function getPhaseInfo(p){return(lang==='en'?PHASE_INFO_EN:PHASE_INFO_JA)[p]||{name:'',desc:''};};
 const SUITS=['♠','♥','♦','♣'],VALUES=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
 const RED=new Set(['♥','♦']);
 const SB=10,BB=20;
+
+// ===== DOPAMINE SYSTEM =====
+const DS = {
+  streak: 0,
+  maxStreak: 0,
+  hands: 0,
+  wins: 0,
+  maxPot: 0,
+  bestHandCat: -1,
+  bestHandName: '—',
+  chipHistory: [1000],
+  achievements: new Set(),
+  startChips: 1000,
+};
+
+// --- SOUND ENGINE (Web Audio API) ---
+let audioCtx = null;
+function getAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq, dur, type='sine', vol=0.18, decay=0.8){
+  try{
+    const ac=getAudio(), o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type=type; o.frequency.setValueAtTime(freq,ac.currentTime);
+    g.gain.setValueAtTime(vol,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur*decay);
+    o.start(ac.currentTime); o.stop(ac.currentTime+dur);
+  }catch(e){}
+}
+function sndDeal(){
+  [0,60,120].forEach(d=>setTimeout(()=>playTone(800+Math.random()*200,0.08,'triangle',0.12),d));
+}
+function sndChip(){
+  playTone(600,0.15,'triangle',0.15);
+  setTimeout(()=>playTone(750,0.1,'triangle',0.1),80);
+}
+function sndWin(){
+  const notes=[523,659,784,1047];
+  notes.forEach((n,i)=>setTimeout(()=>playTone(n,0.25,'sine',0.2),i*90));
+}
+function sndBigWin(){
+  const n=[523,659,784,1047,1319,1568];
+  n.forEach((f,i)=>setTimeout(()=>playTone(f,0.3,'sine',0.22),i*70));
+  setTimeout(()=>playTone(2000,0.5,'sine',0.15),500);
+}
+function sndFold(){
+  playTone(300,0.2,'sawtooth',0.1);
+  setTimeout(()=>playTone(200,0.3,'sawtooth',0.08),100);
+}
+function sndRaise(){
+  playTone(400,0.1,'square',0.1);
+  setTimeout(()=>playTone(600,0.15,'square',0.12),100);
+}
+
+// --- CONFETTI ---
+const CONF_COLORS=['#f59e0b','#ef4444','#22c55e','#6366f1','#ec4899','#38bdf8','#fbbf24'];
+let confParticles=[];
+function launchConfetti(x,y,count=80){
+  const canvas=document.getElementById('confettiCanvas');
+  if(!canvas)return;
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  for(let i=0;i<count;i++){
+    confParticles.push({
+      x:x||canvas.width/2, y:y||canvas.height*0.4,
+      vx:(Math.random()-0.5)*12, vy:(Math.random()-3)*10,
+      color:CONF_COLORS[Math.floor(Math.random()*CONF_COLORS.length)],
+      r:Math.random()*5+3, rot:Math.random()*360,
+      rotV:(Math.random()-0.5)*8, life:1, decay:0.012+Math.random()*0.01
+    });
+  }
+  animateConfetti();
+}
+function animateConfetti(){
+  const canvas=document.getElementById('confettiCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  confParticles=confParticles.filter(p=>p.life>0);
+  confParticles.forEach(p=>{
+    p.x+=p.vx; p.vy+=0.35; p.y+=p.vy; p.rot+=p.rotV; p.life-=p.decay;
+    ctx.save(); ctx.globalAlpha=Math.max(0,p.life);
+    ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle=p.color; ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);
+    ctx.restore();
+  });
+  if(confParticles.length>0)requestAnimationFrame(animateConfetti);
+  else ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+// --- CHIP GAIN POPUP ---
+function showChipGain(amount, isWin){
+  const el=document.getElementById('chipGain');
+  if(!el)return;
+  el.style.top=(window.innerHeight*0.45)+'px';
+  el.textContent=(isWin?'+':'')+amount+' 💰';
+  el.style.color=isWin?'#22c55e':'#ef4444';
+  el.className='chip-gain';
+  void el.offsetWidth;
+  el.className='chip-gain pop';
+}
+
+// --- STREAK BADGE ---
+function showStreak(n){
+  const badge=document.getElementById('streakBadge');
+  const num=document.getElementById('streakNum');
+  if(!badge||!num)return;
+  num.textContent=n;
+  badge.className='streak-badge show';
+  clearTimeout(badge._t);
+  badge._t=setTimeout(()=>{badge.className='streak-badge';},2500);
+}
+
+// --- ACHIEVEMENT SYSTEM ---
+const ACHIEVEMENTS={
+  first_win:   {name:'🎉 初勝利！',        desc:'はじめて勝った！'},
+  win3:        {name:'🔥 3連勝！',         desc:'3ハンド連続で勝利'},
+  win5:        {name:'⚡ 5連勝！',         desc:'5ハンド連続！すごい'},
+  win10:       {name:'👑 10連勝！',        desc:'まさに天才ポーカープレイヤー'},
+  bigpot:      {name:'💰 大金ゲット！',    desc:'300チップ以上のポットを獲得'},
+  hugepot:     {name:'💎 大勝利！',        desc:'500チップ以上の超大型ポット！'},
+  flush:       {name:'🎴 フラッシュ！',    desc:'フラッシュを完成させた'},
+  straight:    {name:'📈 ストレート！',    desc:'ストレートを完成させた'},
+  fullhouse:   {name:'💎 フルハウス！',    desc:'フルハウスを完成させた'},
+  fourcard:    {name:'🔥 フォーカード！',  desc:'4枚同じ数字！'},
+  straightflush:{name:'🌟 ストレートフラッシュ！',desc:'超激レアな役！'},
+  royal:       {name:'👑 ロイヤルフラッシュ！',desc:'最強の手！一生に一度見るかどうか'},
+  comeback:    {name:'💪 逆転勝利！',      desc:'300チップ以下から盛り返した'},
+  bluff:       {name:'🎭 ブラフ成功！',    desc:'弱い手でもポットを獲得'},
+};
+let achTimer=null;
+function unlockAchievement(key){
+  if(DS.achievements.has(key))return;
+  DS.achievements.add(key);
+  const a=ACHIEVEMENTS[key];
+  if(!a)return;
+  const toast=document.getElementById('achToast');
+  const nm=document.getElementById('achName');
+  const dc=document.getElementById('achDesc');
+  if(!toast)return;
+  nm.textContent=a.name; dc.textContent=a.desc;
+  toast.className='ach-toast show';
+  if(achTimer)clearTimeout(achTimer);
+  achTimer=setTimeout(()=>{toast.className='ach-toast';},3200);
+}
+
+// --- BIG HAND FLASH ---
+const BIG_HAND_CATS={5:'🎴',6:'💎',7:'🔥',8:'🌟',9:'👑'};
+function showBigHand(cat, name, sub){
+  if(!BIG_HAND_CATS[cat])return;
+  const el=document.getElementById('bigHandFlash');
+  const em=document.getElementById('bigHandEmoji');
+  const nm=document.getElementById('bigHandName');
+  const sb=document.getElementById('bigHandSub');
+  if(!el)return;
+  em.textContent=BIG_HAND_CATS[cat];
+  nm.textContent=name;
+  sb.textContent=sub||'';
+  el.className='bighand-flash show';
+  setTimeout(()=>{el.className='bighand-flash';},2000);
+}
+
+// --- STATS ---
+function updateStats(won, pot, handCat, handName, currentChips){
+  DS.hands++;
+  if(won){
+    DS.wins++;
+    DS.streak++;
+    if(DS.streak>DS.maxStreak)DS.maxStreak=DS.streak;
+    if(pot>DS.maxPot)DS.maxPot=pot;
+  } else {
+    DS.streak=0;
+  }
+  if(handCat>DS.bestHandCat){DS.bestHandCat=handCat;DS.bestHandName=handName;}
+  DS.chipHistory.push(currentChips);
+  if(DS.chipHistory.length>30)DS.chipHistory.shift();
+}
+function openStats(){
+  const s=DS;
+  const rate=s.hands>0?Math.round(s.wins/s.hands*100):0;
+  const delta=DS.chipHistory[DS.chipHistory.length-1]-(DS.startChips||1000);
+  document.getElementById('st-hands').textContent=s.hands;
+  document.getElementById('st-wins').textContent=s.wins;
+  document.getElementById('st-rate').textContent=rate+'%';
+  document.getElementById('st-streak').textContent=s.maxStreak;
+  document.getElementById('st-maxpot').textContent=s.maxPot;
+  document.getElementById('st-besthand').textContent=s.bestHandName;
+  const dEl=document.getElementById('st-delta');
+  dEl.textContent=(delta>=0?'+':'')+delta;
+  dEl.className='stat-val '+(delta>=0?'green':'red');
+  drawChipChart();
+  document.getElementById('statsModal').className='stats-modal open';
+}
+function closeStats(){document.getElementById('statsModal').className='stats-modal';}
+function drawChipChart(){
+  const canvas=document.getElementById('chipChart');
+  if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=canvas.offsetWidth*dpr;
+  canvas.height=100*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const w=canvas.offsetWidth,h=100;
+  const data=DS.chipHistory;
+  if(data.length<2)return;
+  const mn=Math.min(...data),mx=Math.max(...data);
+  const range=mx-mn||1;
+  const pad=10;
+  const pts=data.map((v,i)=>({
+    x:pad+(w-pad*2)*i/(data.length-1),
+    y:pad+(h-pad*2)*(1-(v-mn)/range)
+  }));
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+  // Area
+  const grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(99,102,241,0.4)');
+  grad.addColorStop(1,'rgba(99,102,241,0)');
+  ctx.beginPath();ctx.moveTo(pts[0].x,h);
+  pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[pts.length-1].x,h);ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+  // Line
+  ctx.beginPath();pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.strokeStyle='#6366f1';ctx.lineWidth=2;ctx.stroke();
+  // Current value label
+  const last=pts[pts.length-1];
+  ctx.fillStyle='#f9fafb';ctx.font='bold 10px sans-serif';ctx.textAlign='right';
+  ctx.fillText(data[data.length-1],w-2,last.y-4);
+}
+
+// --- MASTER WIN HANDLER ---
+// Call this after any player victory
+function dopamineOnWin(pot, handCat, handName, currentChips, wasBluff){
+  updateStats(true, pot, handCat, handName, currentChips);
+  sndWin();
+  showChipGain('+'+pot, true);
+
+  // Big hand flash & special sound
+  if(handCat>=5){
+    showBigHand(handCat, handName, pot+'チップ獲得！');
+    if(handCat>=8)sndBigWin();
+  }
+
+  // Confetti threshold
+  if(pot>=150)launchConfetti(null,null,pot>=400?160:80);
+
+  // Streak
+  if(DS.streak>=2)showStreak(DS.streak);
+
+  // Achievements - streak
+  if(DS.wins===1)unlockAchievement('first_win');
+  if(DS.streak===3)unlockAchievement('win3');
+  if(DS.streak===5)unlockAchievement('win5');
+  if(DS.streak===10)unlockAchievement('win10');
+  // pot size
+  if(pot>=300)unlockAchievement('bigpot');
+  if(pot>=500)unlockAchievement('hugepot');
+  // hand rank
+  const handKeys={5:'flush',4:'straight',6:'fullhouse',7:'fourcard',8:'straightflush',9:'royal'};
+  if(handKeys[handCat])unlockAchievement(handKeys[handCat]);
+  // comeback
+  if(currentChips-pot<=300 && currentChips>=500)unlockAchievement('comeback');
+  // bluff (won with high card or one pair from behind)
+  if(wasBluff)unlockAchievement('bluff');
+}
+function dopamineOnLoss(currentChips){
+  updateStats(false,0,-1,'',currentChips);
+  sndFold();
+}
+function dopamineOnDeal(){sndDeal();}
+function dopamineOnAction(action){if(action==='raise')sndRaise();else if(action==='call'||action==='check')sndChip();}
+
 
 // ===== DECK =====
 function mkDeck(){const d=[];for(const s of SUITS)for(let i=0;i<VALUES.length;i++)d.push({suit:s,value:VALUES[i],rank:i+2});return d;}
@@ -477,18 +801,18 @@ function detectDraws(myHand,comm){
   const topSC=Math.max(...Object.values(sc));
   if(topSC===4&&handNow.cat<5){
     const ts=Object.entries(sc).find(([,v])=>v===4)[0];
-    const sn={'♠':'スペード','♥':'ハート','♦':'ダイヤ','♣':'クラブ'}[ts];
-    draws.push({icon:'🎴',name:'フラッシュドロー',outs:9,pct:dcPct(9,tocome,comm.length),tocome,plain:sn+'のカードがあと1枚来れば完成！（残り9枚）'});
+    const sn=lang==='en'?{'♠':'Spades','♥':'Hearts','♦':'Diamonds','♣':'Clubs'}[ts]:{'♠':'スペード','♥':'ハート','♦':'ダイヤ','♣':'クラブ'}[ts];
+    draws.push({icon:'🎴',name:t('フラッシュドロー','Flush Draw'),outs:9,pct:dcPct(9,tocome,comm.length),tocome,plain:t(sn+'のカードがあと1枚来れば完成！（残り9枚）','One more '+sn+' card completes the flush! (9 outs)')});
   }
   const rS=new Set(all.map(c=>c.rank));if(rS.has(14))rS.add(1);
   let hasO=false,hasG=false;
   if(handNow.cat<4){
     for(let low=1;low<=10;low++){const w=[low,low+1,low+2,low+3,low+4],hits=w.filter(r=>rS.has(r)).length;if(hits===4){const m=w.find(r=>!rS.has(r));if(m===low||m===low+4)hasO=true;else hasG=true;}}
-    if(hasO)draws.push({icon:'🔗',name:'ストレートドロー（両側）',outs:8,pct:dcPct(8,tocome,comm.length),tocome,plain:'両側のどちらかが来れば5枚連続になります（残り8枚）'});
-    else if(hasG)draws.push({icon:'🎯',name:'ストレートドロー（内側）',outs:4,pct:dcPct(4,tocome,comm.length),tocome,plain:'間の1枚が来れば5枚連続になります（残り4枚）'});
+    if(hasO)draws.push({icon:'🔗',name:t('ストレートドロー（両側）','Open-Ended Straight'),outs:8,pct:dcPct(8,tocome,comm.length),tocome,plain:t('両側のどちらかが来れば5枚連続になります（残り8枚）','Either end completes the straight! (8 outs)')});
+    else if(hasG)draws.push({icon:'🎯',name:t('ストレートドロー（内側）','Gutshot Straight'),outs:4,pct:dcPct(4,tocome,comm.length),tocome,plain:t('間の1枚が来れば5枚連続になります（残り4枚）','One inside card completes the straight! (4 outs)')});
   }
-  if(handNow.cat<1&&comm.length>=3){const pR=myHand.map(c=>c.rank),cR=comm.map(c=>c.rank),outs=pR.filter(r=>!cR.includes(r)).length*3;if(outs>0)draws.push({icon:'🤝',name:'ペアドロー',outs,pct:dcPct(outs,tocome,comm.length),tocome,plain:'手札と同じ数字が来ればペアになります（残り'+outs+'枚）'});}
-  if(handNow.cat===1&&comm.length>=3)draws.push({icon:'🎰',name:'スリーカードドロー',outs:2,pct:dcPct(2,tocome,comm.length),tocome,plain:'ペアの数字があと1枚来れば3枚そろいます（残り2枚）'});
+  if(handNow.cat<1&&comm.length>=3){const pR=myHand.map(c=>c.rank),cR=comm.map(c=>c.rank),outs=pR.filter(r=>!cR.includes(r)).length*3;if(outs>0)draws.push({icon:'🤝',name:t('ペアドロー','Pair Draw'),outs,pct:dcPct(outs,tocome,comm.length),tocome,plain:t('手札と同じ数字が来ればペアになります（残り','Match your hole card to make a pair! (')+outs+t('枚）',' outs)')});}
+  if(handNow.cat===1&&comm.length>=3)draws.push({icon:'🎰',name:t('スリーカードドロー','Trips Draw'),outs:2,pct:dcPct(2,tocome,comm.length),tocome,plain:t('ペアの数字があと1枚来れば3枚そろいます（残り2枚）','One more pair card makes three of a kind! (2 outs)')});
   return draws;
 }
 function getWinBasis(myHand,comm){
@@ -499,9 +823,9 @@ function getWinBasis(myHand,comm){
     const r1=Math.max(myHand[0].rank,myHand[1].rank),r2=Math.min(myHand[0].rank,myHand[1].rank);
     const suited=myHand[0].suit===myHand[1].suit,paired=r1===r2;
     let desc;
-    if(paired)desc='ポケットペア（'+vn(r1)+' - '+vn(r1)+'）手札が同じ数字';
-    else desc='手札 '+vn(r1)+' と '+vn(r2)+(suited?' ／ 同じマーク':'');
-    return{hand:desc,draws:null,phase:'プリフロップ'};
+    if(paired)desc=t('ポケットペア（','Pocket Pair (')+vn(r1)+' - '+vn(r1)+t('）手札が同じ数字',') — same hole cards');
+    else desc=t('手札 ','Hole: ')+vn(r1)+t(' と ',' & ')+vn(r2)+(suited?t(' ／ 同じマーク',' (suited)'):'');
+    return{hand:desc,draws:null,phase:t('プリフロップ','Pre-Flop')};
   }
   const all=[...myHand,...comm];
   const ev=bestHand(all);
@@ -510,11 +834,11 @@ function getWinBasis(myHand,comm){
   const rc={};for(const c of all)rc[c.rank]=(rc[c.rank]||0)+1;
   const pairs=Object.entries(rc).filter(([,v])=>v>=2).sort((a,b)=>b[1]-a[1]||b[0]-a[0]);
   let handDetail=ev.name;
-  if(ev.cat===1&&pairs.length>0)handDetail='ワンペア（'+vn(+pairs[0][0])+'のペア）';
-  else if(ev.cat===2&&pairs.length>=2)handDetail='ツーペア（'+vn(+pairs[0][0])+'と'+vn(+pairs[1][0])+'）';
-  else if(ev.cat===3&&pairs.length>0)handDetail='スリーカード（'+vn(+pairs[0][0])+'が3枚）';
-  else if(ev.cat===6&&pairs.length>=2)handDetail='フルハウス（'+vn(+pairs[0][0])+'×3＋'+vn(+pairs[1][0])+'×2）';
-  else if(ev.cat===7&&pairs.length>0)handDetail='フォーカード（'+vn(+pairs[0][0])+'が4枚）';
+  if(ev.cat===1&&pairs.length>0)handDetail=t('ワンペア','One Pair')+'（'+vn(+pairs[0][0])+t('のペア','pair')+'）';
+  else if(ev.cat===2&&pairs.length>=2)handDetail=t('ツーペア','Two Pair')+'（'+vn(+pairs[0][0])+t('と',' & ')+vn(+pairs[1][0])+'）';
+  else if(ev.cat===3&&pairs.length>0)handDetail=t('スリーカード','Three of a Kind')+'（'+vn(+pairs[0][0])+t('が3枚',' x3')+'）';
+  else if(ev.cat===6&&pairs.length>=2)handDetail=t('フルハウス','Full House')+'（'+vn(+pairs[0][0])+t('×3＋',' x3 + ')+vn(+pairs[1][0])+t('×2）',' x2)');
+  else if(ev.cat===7&&pairs.length>0)handDetail=t('フォーカード','Four of a Kind')+'（'+vn(+pairs[0][0])+t('が4枚',' x4)');
   const draws=detectDraws(myHand,comm);
   const drawDesc=draws.length>0?draws.map(d=>d.name+'('+d.pct+'%)').join('、'):null;
   return{hand:handDetail,draws:drawDesc,phase:null};
@@ -526,15 +850,48 @@ function getTip(myHand,comm,currentBet,myBet,pot){
   const handNow=bestHand(all),draws=detectDraws(myHand,comm);
   const toCall=Math.max(0,currentBet-myBet),canCheck=toCall===0;
   const potOdds=toCall>0?Math.round(toCall/(pot+toCall)*100):0;
-  if(str>=0.88||handNow.cat>=6)return{icon:'🔥',color:'#22c55e',main:'とても強い手です！',reason:canCheck?'レイズしてポットを大きくしましょう。':'積極的にレイズしましょう。'};
-  if(str>=0.68||handNow.cat>=4)return{icon:'💪',color:'#86efac',main:'強い手です！',reason:canCheck?'チェックでもよいですがレイズで稼ぐチャンスです。':'コールかレイズが有利。'};
-  if(handNow.cat===1)return{icon:'🤝',color:'#a3e635',main:'ワンペアです！',reason:canCheck?'チェックして次のカードを見ましょう。相手が強いベットをしたら注意。':'コールは有利。大きなレイズには慎重に。'};
-  if(str>=0.55||handNow.cat>=2)return{icon:'😊',color:'#a3e635',main:'まずまずの手です',reason:canCheck?'チェックして次のカードを待ちましょう。':'小さなコールならOK。'};
-  if(draws.length>0){const d=draws[0];if(d.pct>=30)return{icon:'⚡',color:'#fbbf24',main:'役を作るチャンスがあります！（'+d.name+'）',reason:'完成率'+d.pct+'%。'+(potOdds>0&&potOdds<d.pct?'コールする価値があります。':'コールして待ちましょう。')};return{icon:'🎲',color:'#f59e0b',main:d.name+'中（完成率'+d.pct+'%）',reason:'完成率はやや低め。コストが少なければ試しても。'};}
-  if(str>=0.40)return{icon:'😐',color:'#94a3b8',main:'弱い〜中程度の手です',reason:canCheck?'チェックして様子を見ましょう。':'大きなベットにはフォールドも検討。'};
-  return{icon:'❄️',color:'#f87171',main:'弱い手です',reason:canCheck?'チェックして次のカードを待ちましょう。':'相手のベットにはフォールドが安全です。'};
+  if(str>=0.88||handNow.cat>=6)return{icon:'🔥',color:'#22c55e',main:t('とても強い手です！','Very strong hand!'),reason:canCheck?t('レイズしてポットを大きくしましょう。','Raise to build the pot.'):t('積極的にレイズしましょう。','Raise aggressively.')};
+  if(str>=0.68||handNow.cat>=4)return{icon:'💪',color:'#86efac',main:t('強い手です！','Strong hand!'),reason:canCheck?t('チェックでもよいですがレイズで稼ぐチャンスです。','Check or raise to win more.'):t('コールかレイズが有利。','Call or raise.')};
+  if(handNow.cat===1)return{icon:'🤝',color:'#a3e635',main:t('ワンペアです！','One Pair!'),reason:canCheck?t('チェックして次のカードを見ましょう。相手が強いベットをしたら注意。','Check and see next card. Beware of big bets.'):t('コールは有利。大きなレイズには慎重に。','Calling is fine. Be cautious of big raises.')};
+  if(str>=0.55||handNow.cat>=2)return{icon:'😊',color:'#a3e635',main:t('まずまずの手です','Decent hand'),reason:canCheck?t('チェックして次のカードを待ちましょう。','Check and wait for the next card.'):t('小さなコールならOK。','Small call is fine.')};
+  if(draws.length>0){const d=draws[0];if(d.pct>=30)return{icon:'⚡',color:'#fbbf24',main:t('役を作るチャンスがあります！','Drawing opportunity!')+'（'+d.name+'）',reason:t('完成率','Complete rate')+d.pct+'%. '+(potOdds>0&&potOdds<d.pct?t('コールする価値があります。','Worth calling.'):t('コールして待ちましょう。','Call and wait.'))};return{icon:'🎲',color:'#f59e0b',main:d.name+t('中（完成率','(complete rate ')+d.pct+'%）',reason:t('完成率はやや低め。コストが少なければ試しても。','Low odds. Try only if the cost is small.')};}
+  if(str>=0.40)return{icon:'😐',color:'#94a3b8',main:t('弱い〜中程度の手です','Weak to medium hand'),reason:canCheck?t('チェックして様子を見ましょう。','Check and observe.'):t('大きなベットにはフォールドも検討。','Consider folding to big bets.')};
+  return{icon:'❄️',color:'#f87171',main:t('弱い手です','Weak hand'),reason:canCheck?t('チェックして次のカードを待ちましょう。','Check and wait.'):t('相手のベットにはフォールドが安全です。','Folding to bets is safe.')};
 }
 
+
+// ===== LANGUAGE SYSTEM =====
+let lang='ja';
+function t(ja,en){return lang==='en'?en:ja;}
+const HN_EN=['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
+function hn(jaName){
+  if(lang==='ja')return jaName;
+  const i=HN.indexOf(jaName);return i>=0?HN_EN[i]:jaName;
+}
+function toggleLang(){
+  lang=lang==='ja'?'en':'ja';
+  const btn=document.getElementById('langBtn');
+  if(btn)btn.textContent=lang==='ja'?'🇯🇵':'🇺🇸';
+  if(appState==='game'){
+    if(gameMode==='ai')renderAI();
+    else if(gameMode==='mp')renderMP();
+    else if(gameMode==='online')render();
+  } else renderMenu();
+}
+
+// Translated flavor texts
+const AI_FLAVOR_EN={
+  fold:['💭 Better fold here...','😤 Not worth it','🙈 Next time','🤐 Cannot win this one'],
+  check:['🤔 Let me see...','😏 No need to move yet','🎭 Keeping cards close','🧘 Playing it safe'],
+  call:['😤 Challenge accepted!','💪 Bring it on!','🎰 Ride along','😈 Got you'],
+  raise:['😈 Pressure on!','🔥 Going big!','⚡ Aggressive play!','👊 All in attitude!']
+};
+const MY_FLAVOR_EN={
+  fold:['🗑️ Walking away...','💨 Folding this one','😮‍💨 Next hand'],
+  check:['✋ Check — watching','🧘 Free pass','🙂 Taking it easy'],
+  call:['📞 Calling!','💼 Staying in','🤜 Meet your bet!'],
+  raise:['⬆️ Raising it up!','🎯 Pressing the attack!','🔥 Putting on pressure!']
+};
 
 // ===== SETTINGS & DIFFICULTY =====
 const gameSettings={difficulty:'normal',cutIn:true,numPlayers:2,autoFoldSkip:true};
@@ -567,7 +924,11 @@ const MY_FLAVOR={
   call:['📞 追いかける！','💼 ついていくしかない','🤜 受けて立つ！'],
   raise:['⬆️ 攻めに行く！','🎯 ここで畳み掛ける！','🔥 プレッシャーをかけろ！']
 };
-function pickFlavor(map,key){const arr=map[key]||[];return arr[Math.floor(Math.random()*arr.length)]||'';}
+function pickFlavor(map,key){
+  const enMap=map===AI_FLAVOR?AI_FLAVOR_EN:map===MY_FLAVOR?MY_FLAVOR_EN:null;
+  const useMap=(lang==='en'&&enMap)?enMap:map;
+  const arr=useMap[key]||[];return arr[Math.floor(Math.random()*arr.length)]||'';
+}
 
 let cutinResolve=null,cutinTimer=null;
 // avatar: emoji, actor: label, verb: action text, amount: chip text, flavor: flavor text, isPlayer: bool
@@ -583,7 +944,7 @@ function showCutin({avatar,actor,verb,amount,flavor,isPlayer}){
     document.getElementById('cutinFlavor').textContent=flavor||'';
     // Highlight color based on action
     const borderMap={fold:'#ef4444',check:'#6b7280',call:'#2563eb',raise:'#16a34a',player:'#6366f1'};
-    const bKey=isPlayer?'player':verb&&verb.includes('フォールド')?'fold':verb&&verb.includes('チェック')?'check':verb&&verb.includes('コール')?'call':'raise';
+    const bKey=isPlayer?'player':verb&&(verb.includes('フォールド')||verb.includes('Fold'))?'fold':verb&&(verb.includes('チェック')||verb.includes('Check'))?'check':verb&&(verb.includes('コール')||verb.includes('Call'))?'call':'raise';
     toast.style.borderColor=borderMap[bKey]||'#374151';
     // Progress bar
     const bar=document.getElementById('cutinProgFill');
@@ -611,44 +972,44 @@ function mpCreate(){
   appState='lobby_host';
   const code=genCode();
   document.getElementById('handNum').textContent='';
-  renderLobbyHost(code,'PeerJSを起動中...',false);
+  renderLobbyHost(code,t('PeerJSを起動中...','Connecting...'),false);
   try{
     peer=new Peer('pkr-'+code.toLowerCase(),{debug:0});
-    peer.on('open',()=>{renderLobbyHost(code,'相手の接続を待っています',true);});
+    peer.on('open',()=>{renderLobbyHost(code,t('相手の接続を待っています','Waiting for opponent...'),true);});
     peer.on('connection',c=>{
       conn=c;isHost=true;
       setupConn();
-      renderLobbyHost(code,'相手が接続しました！ゲームを開始します...',true);
+      renderLobbyHost(code,t('相手が接続しました！ゲームを開始します...','Opponent connected! Starting game...'),true);
       setTimeout(()=>startOnlineGame(),800);
     });
     peer.on('error',err=>{
       if(err.type==='unavailable-id'){const nc=genCode();mpCreateWithCode(nc);}
-      else renderLobbyHost(code,'エラー: '+err.message,false);
+      else renderLobbyHost(code,t('エラー: ','Error: ')+err.message,false);
     });
-  }catch(e){renderLobbyHost(code,'PeerJS読込エラー。ページを再読み込みしてください。',false);}
+  }catch(e){renderLobbyHost(code,t('PeerJS読込エラー。ページを再読み込みしてください。','Loading error. Please reload the page.'),false);}
 }
 
 function mpJoin(code){
-  if(!code||code.length<6){renderLobbyJoin('ルームコードを6文字入力してください','');return;}
+  if(!code||code.length<6){renderLobbyJoin(t('ルームコードを6文字入力してください','Enter a 6-letter room code'),'');return;}
   appState='lobby_join';
-  renderLobbyJoin('接続中...','connecting');
+  renderLobbyJoin(t('接続中...','Connecting...'),'connecting');
   try{
     peer=new Peer({debug:0});
     peer.on('open',()=>{
       conn=peer.connect('pkr-'+code.toLowerCase(),{reliable:true});
       setupConn();
-      renderLobbyJoin('接続中...','connecting');
+      renderLobbyJoin(t('接続中...','Connecting...'),'connecting');
       setTimeout(()=>{
-        if(appState==='lobby_join')renderLobbyJoin('接続できません。コードを確認してください。','err');
+        if(appState==='lobby_join')renderLobbyJoin(t('接続できません。コードを確認してください。','Cannot connect. Check the room code.'),'err');
       },8000);
     });
-    peer.on('error',()=>renderLobbyJoin('ルームが見つかりません: '+code,'err'));
-  }catch(e){renderLobbyJoin('PeerJS読込エラー。ページを再読み込みしてください。','err');}
+    peer.on('error',()=>renderLobbyJoin(t('ルームが見つかりません: ','Room not found: ')+code,'err'));
+  }catch(e){renderLobbyJoin(t('PeerJS読込エラー。ページを再読み込みしてください。','Loading error. Please reload.'),'err');}
 }
 
 function setupConn(){
   conn.on('open',()=>{
-    if(!isHost){renderLobbyJoin('接続成功！ゲーム開始を待っています...','ok');}
+    if(!isHost){renderLobbyJoin(t('接続成功！ゲーム開始を待っています...','Connected! Waiting for game to start...'),'ok');}
   });
   conn.on('data',data=>{
     if(data.type==='STATE'&&!isHost){
@@ -659,12 +1020,12 @@ function setupConn(){
   });
   conn.on('close',()=>{
     if(appState==='game'){
-      G.message='相手が切断しました';G.handOver=true;
+      G.message=t('相手が切断しました','Opponent disconnected');G.handOver=true;
       if(isHost){computeHostV();render();}
     }
   });
   conn.on('error',()=>{
-    if(appState==='game'){G.message='接続エラーが発生しました';render();}
+    if(appState==='game'){G.message=t('接続エラーが発生しました','Connection error');render();}
   });
 }
 
@@ -710,8 +1071,8 @@ function startOnlineGame(){
 }
 
 function onlineNewHand(){
-  if(G.hostChips<=0){G.gameOver=true;G.gameWinner='相手';broadcast();return;}
-  if(G.guestChips<=0){G.gameOver=true;G.gameWinner='あなた';if(!isHost){G.gameWinner='相手';}broadcast();return;}
+  if(G.hostChips<=0){G.gameOver=true;G.gameWinner=t('相手','Opponent');broadcast();return;}
+  if(G.guestChips<=0){G.gameOver=true;G.gameWinner=t('あなた','You');if(!isHost){G.gameWinner=t('相手','Opponent');}broadcast();return;}
   G.handCount++;
   G.deck=shuffle(mkDeck());
   G.hostHand=[G.deck.pop(),G.deck.pop()];
@@ -732,7 +1093,7 @@ function processGuestAction(data){
   const toCall=Math.max(0,G.currentBet-G.guestBet);
   if(data.action==='fold'){
     G.guestActed=true;
-    onlineEndHand('host','相手がフォールドしました');
+    onlineEndHand('host',t('相手がフォールドしました','Opponent folded'));
     return;
   }
   if(data.action==='call'){
@@ -758,7 +1119,7 @@ function onlineAct(action,amount){
   }
   // Host acts
   const toCall=Math.max(0,G.currentBet-G.hostBet);
-  if(action==='fold'){G.hostActed=true;onlineEndHand('guest','あなたがフォールドしました');return;}
+  if(action==='fold'){G.hostActed=true;onlineEndHand('guest',t('あなたがフォールドしました','You folded'));return;}
   if(action==='call'){const toAdd=Math.min(toCall,G.hostChips);G.pot+=toAdd;G.hostChips-=toAdd;G.hostBet+=toAdd;}
   else if(action==='raise'){const total=Math.min(amount,G.hostChips+G.hostBet);const toAdd=total-G.hostBet;G.pot+=toAdd;G.hostChips-=toAdd;G.hostBet=total;G.currentBet=total;G.guestActed=false;}
   G.hostActed=true;G.hostTurn=false;
@@ -770,9 +1131,9 @@ function onlineAdvance(){
   G.hostBet=G.guestBet=G.currentBet=0;G.hostActed=G.guestActed=false;
   G.hostTurn=!G.dealerIsHost; // post-flop: non-dealer first
   switch(G.phase){
-    case'preflop':G.phase='flop';G.community.push(G.deck.pop(),G.deck.pop(),G.deck.pop());G.message='フロップ：共有カード3枚が公開！';break;
-    case'flop':G.phase='turn';G.community.push(G.deck.pop());G.message='ターン：4枚目が公開！';break;
-    case'turn':G.phase='river';G.community.push(G.deck.pop());G.message='リバー：最後のカード！';break;
+    case'preflop':G.phase='flop';G.community.push(G.deck.pop(),G.deck.pop(),G.deck.pop());G.message=t('フロップ：共有カード3枚が公開！','Flop: 3 community cards revealed!');break;
+    case'flop':G.phase='turn';G.community.push(G.deck.pop());G.message=t('ターン：4枚目が公開！','Turn: 4th card revealed!');break;
+    case'turn':G.phase='river';G.community.push(G.deck.pop());G.message=t('リバー：最後のカード！','River: Final card!');break;
     case'river':onlineShowdown();return;
   }
   broadcast();
@@ -785,13 +1146,13 @@ function onlineShowdown(){
   const cmp=ph.score-gh.score;
   if(cmp>0){
     G.hostChips+=G.pot;G.pot=0;
-    G.message='🎉 ホストの勝ち！ ('+ph.name+')';
+    G.message='🎉 '+t('ホストの勝ち！','Host wins!')+' ('+hn(ph.name)+')';
   }else if(cmp<0){
     G.guestChips+=G.pot;G.pot=0;
-    G.message='🎉 ゲストの勝ち！ ('+gh.name+')';
+    G.message='🎉 '+t('ゲストの勝ち！','Guest wins!')+' ('+hn(gh.name)+')';
   }else{
     const half=Math.floor(G.pot/2);G.hostChips+=half;G.guestChips+=G.pot-half;G.pot=0;
-    G.message='引き分け！ ('+ph.name+')';
+    G.message=t('引き分け！','Draw!')+' ('+hn(ph.name)+')';
   }
   G.dealerIsHost=!G.dealerIsHost;
   broadcast();
@@ -808,13 +1169,14 @@ let AI_G={};
 function startAI(){
   appState='game';gameMode='ai';
   AI_G={playerChips:1000,aiChips:1000,dealerIsPlayer:true,handCount:0,phase:'idle',gameOver:false};
+  DS.streak=0;DS.maxStreak=0;DS.hands=0;DS.wins=0;DS.maxPot=0;DS.bestHandCat=-1;DS.bestHandName='—';DS.chipHistory=[1000];DS.achievements=new Set();DS.startChips=1000;
   aiNewHand();
 }
 function aiNewHand(){
   if(AI_G.playerChips<=0){AI_G.gameOver=true;AI_G.gameWinner='AI';renderAI();return;}
-  if(AI_G.aiChips<=0){AI_G.gameOver=true;AI_G.gameWinner='あなた';renderAI();return;}
+  if(AI_G.aiChips<=0){AI_G.gameOver=true;AI_G.gameWinner=t('あなた','You');renderAI();return;}
   AI_G.handCount++;
-  document.getElementById('handNum').textContent='ハンド #'+AI_G.handCount;
+  document.getElementById('handNum').textContent=t('ハンド','Hand')+' #'+AI_G.handCount;
   AI_G.deck=shuffle(mkDeck());
   AI_G.playerHand=[AI_G.deck.pop(),AI_G.deck.pop()];
   AI_G.aiHand=[AI_G.deck.pop(),AI_G.deck.pop()];
@@ -824,24 +1186,24 @@ function aiNewHand(){
   AI_G.playerChips-=AI_G.playerBet;AI_G.aiChips-=AI_G.aiBet;
   AI_G.pot=AI_G.playerBet+AI_G.aiBet;AI_G.currentBet=BB;
   AI_G.playerActed=false;AI_G.aiActed=false;AI_G.playerTurn=AI_G.dealerIsPlayer;
-  renderAI();if(!AI_G.playerTurn)setTimeout(aiDoAct,1800);
+  renderAI();dopamineOnDeal();if(!AI_G.playerTurn)setTimeout(aiDoAct,1800);
 }
 async function aiPlayerAct(action,amount){
   if(!AI_G.playerTurn||AI_G.handOver)return;
   const toCall=Math.max(0,AI_G.currentBet-AI_G.playerBet);
   const canCheck=toCall===0;
   const actKey=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
-  const verbMap={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbMap={fold:t('フォールド','Fold'),check:t('チェック','Check'),call:t('コール','Call'),raise:t('レイズ','Raise')};
   const verbEmoji={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
   let chipText='';
-  if(action==='fold'){aiEnd('ai','あなたが手を捨てました');
-    await showCutin({avatar:'🗑️',actor:'あなたの行動',verb:'フォールド',amount:'',flavor:pickFlavor(MY_FLAVOR,'fold'),isPlayer:true});
+  if(action==='fold'){aiEnd('ai',t('あなたが手を捨てました','You folded'),true);dopamineOnLoss(AI_G.playerChips);
+    await showCutin({avatar:'🗑️',actor:t('あなたの行動','Your Action'),verb:t('フォールド','Fold'),amount:'',flavor:pickFlavor(MY_FLAVOR,'fold'),isPlayer:true});
     return;}
-  if(action==='call'){const a=Math.min(toCall,AI_G.playerChips);AI_G.pot+=a;AI_G.playerChips-=a;AI_G.playerBet+=a;chipText=a+'チップ';}
-  else if(action==='raise'){const total=Math.min(amount,AI_G.playerChips+AI_G.playerBet);const a=total-AI_G.playerBet;AI_G.pot+=a;AI_G.playerChips-=a;AI_G.playerBet=total;AI_G.currentBet=total;AI_G.aiActed=false;chipText='→ 合計 '+total+'チップ';}
+  if(action==='call'){const a=Math.min(toCall,AI_G.playerChips);AI_G.pot+=a;AI_G.playerChips-=a;AI_G.playerBet+=a;chipText=a+' '+t('チップ','chips');dopamineOnAction(actKey);}
+  else if(action==='raise'){const total=Math.min(amount,AI_G.playerChips+AI_G.playerBet);const a=total-AI_G.playerBet;AI_G.pot+=a;AI_G.playerChips-=a;AI_G.playerBet=total;AI_G.currentBet=total;AI_G.aiActed=false;chipText=t('→ 合計','→ Total ')+total+' '+t('チップ','chips');dopamineOnAction('raise');}
   AI_G.playerActed=true;AI_G.playerTurn=false;
   renderAI();
-  await showCutin({avatar:verbEmoji[actKey],actor:'あなたの行動',verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(MY_FLAVOR,actKey),isPlayer:true});
+  await showCutin({avatar:verbEmoji[actKey],actor:t('あなたの行動','Your Action'),verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(MY_FLAVOR,actKey),isPlayer:true});
   if(AI_G.playerActed&&AI_G.aiActed&&AI_G.playerBet===AI_G.aiBet){setTimeout(aiAdvance,900);}
   else{setTimeout(aiDoAct,1600);}
 }
@@ -862,17 +1224,17 @@ async function aiDoAct(){
   // Cut-in text
   // Determine action key for flavor
   const actKey=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
-  const verbMap={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbMap={fold:t('フォールド','Fold'),check:t('チェック','Check'),call:t('コール','Call'),raise:t('レイズ','Raise')};
   const verbEmoji={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
-  const chipText=action==='call'?Math.min(toCall2,AI_G.aiChips)+'チップ':action==='raise'?'→ 合計 '+Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet)+'チップ':'';
+  const chipText=action==='call'?Math.min(toCall2,AI_G.aiChips)+' '+t('チップ','chips'):action==='raise'?t('→ 合計','→ Total')+' '+Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet)+' '+t('チップ','chips'):'';
   // Message for table
-  if(action==='fold')AI_G.message='AIが降りました';
-  else if(canCheck&&action==='call')AI_G.message='AIがチェックしました';
-  else if(action==='call')AI_G.message='AIがコール（'+toCall2+'チップ）';
-  else AI_G.message='AIがレイズ → 合計'+Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet)+'チップ';
+  if(action==='fold')AI_G.message=t('AIが降りました','AI folded');
+  else if(canCheck&&action==='call')AI_G.message=t('AIがチェックしました','AI checked');
+  else if(action==='call')AI_G.message=t('AIがコール','AI called')+' ('+toCall2+' '+t('チップ','chips')+')';
+  else AI_G.message=t('AIがレイズ → 合計','AI raised → total ')+Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet)+' '+t('チップ','chips');
   renderAI();
-  await showCutin({avatar:verbEmoji[actKey],actor:'🤖 AI の行動',verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(AI_FLAVOR,actKey),isPlayer:false});
-  if(action==='fold'){aiEnd('player','AIが降りました');return;}
+  await showCutin({avatar:verbEmoji[actKey],actor:t('🤖 AI の行動','🤖 AI Action'),verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(AI_FLAVOR,actKey),isPlayer:false});
+  if(action==='fold'){aiEnd('player',t('AIが降りました','AI folded'));return;}
   if(action==='call'){const a=Math.min(toCall2,AI_G.aiChips);AI_G.pot+=a;AI_G.aiChips-=a;AI_G.aiBet+=a;}
   else if(action==='raise'){const total=Math.min(raiseAmt,AI_G.aiChips+AI_G.aiBet);const a=total-AI_G.aiBet;AI_G.pot+=a;AI_G.aiChips-=a;AI_G.aiBet=total;AI_G.currentBet=total;AI_G.playerActed=false;}
   AI_G.aiActed=true;AI_G.playerTurn=true;
@@ -882,25 +1244,35 @@ async function aiDoAct(){
 function aiAdvance(){
   AI_G.playerBet=AI_G.aiBet=AI_G.currentBet=0;AI_G.playerActed=AI_G.aiActed=false;AI_G.playerTurn=!AI_G.dealerIsPlayer;
   switch(AI_G.phase){
-    case'preflop':AI_G.phase='flop';AI_G.community.push(AI_G.deck.pop(),AI_G.deck.pop(),AI_G.deck.pop());AI_G.message='フロップ：共有カード3枚が公開！';break;
-    case'flop':AI_G.phase='turn';AI_G.community.push(AI_G.deck.pop());AI_G.message='ターン：4枚目が公開！';break;
-    case'turn':AI_G.phase='river';AI_G.community.push(AI_G.deck.pop());AI_G.message='リバー：最後のカード！';break;
+    case'preflop':AI_G.phase='flop';AI_G.community.push(AI_G.deck.pop(),AI_G.deck.pop(),AI_G.deck.pop());AI_G.message=t('フロップ：共有カード3枚が公開！','Flop: 3 community cards revealed!');break;
+    case'flop':AI_G.phase='turn';AI_G.community.push(AI_G.deck.pop());AI_G.message=t('ターン：4枚目が公開！','Turn: 4th card revealed!');break;
+    case'turn':AI_G.phase='river';AI_G.community.push(AI_G.deck.pop());AI_G.message=t('リバー：最後のカード！','River: Final card!');break;
     case'river':aiShowdown();return;
   }
-  renderAI();if(!AI_G.playerTurn)setTimeout(aiDoAct,1800);
+  renderAI();dopamineOnDeal();if(!AI_G.playerTurn)setTimeout(aiDoAct,1800);
 }
 function aiShowdown(){
   AI_G.phase='showdown';AI_G.showAI=true;AI_G.handOver=true;
   const ph=bestHand([...AI_G.playerHand,...AI_G.community]),ah=bestHand([...AI_G.aiHand,...AI_G.community]);
   const cmp=ph.score-ah.score;
-  if(cmp>0)aiEnd('player','🎉 あなたの勝ち！ ('+ph.name+')');
-  else if(cmp<0)aiEnd('ai','AIの勝ち ('+ah.name+')');
-  else{const half=Math.floor(AI_G.pot/2);AI_G.playerChips+=half;AI_G.aiChips+=AI_G.pot-half;AI_G.pot=0;AI_G.message='引き分け ('+ph.name+')';AI_G.dealerIsPlayer=!AI_G.dealerIsPlayer;renderAI();}
+  if(cmp>0){
+    const pot=AI_G.pot;
+    aiEnd('player','🎉 '+t('あなたの勝ち！','You win!')+'('+hn(ph.name)+')',true);
+    const wasBluff=ph.cat<=1;
+    setTimeout(()=>dopamineOnWin(pot,ph.cat,hn(ph.name),AI_G.playerChips,wasBluff),100);
+  }
+  else if(cmp<0){aiEnd('ai',t('AIの勝ち','AI wins')+'('+hn(ah.name)+')',true);setTimeout(()=>dopamineOnLoss(AI_G.playerChips),100);}
+  else{const half=Math.floor(AI_G.pot/2);AI_G.playerChips+=half;AI_G.aiChips+=AI_G.pot-half;AI_G.pot=0;AI_G.message=t('引き分け','Draw')+'('+hn(ph.name)+')';AI_G.dealerIsPlayer=!AI_G.dealerIsPlayer;updateStats(false,0,ph.cat,hn(ph.name),AI_G.playerChips);renderAI();}
 }
-function aiEnd(winner,msg){
+function aiEnd(winner,msg,_skipDopamine){
   AI_G.handOver=true;AI_G.showAI=(AI_G.phase==='showdown');
-  if(winner==='player')AI_G.playerChips+=AI_G.pot;else AI_G.aiChips+=AI_G.pot;
+  const pot=AI_G.pot;
+  if(winner==='player')AI_G.playerChips+=pot;else AI_G.aiChips+=pot;
   AI_G.pot=0;AI_G.message=msg;AI_G.dealerIsPlayer=!AI_G.dealerIsPlayer;renderAI();
+  if(!_skipDopamine){
+    if(winner==='player')setTimeout(()=>dopamineOnWin(pot,-1,'',AI_G.playerChips,false),100);
+    else setTimeout(()=>dopamineOnLoss(AI_G.playerChips),100);
+  }
 }
 
 // ===== MULTI-PLAYER AI MODE (3-4 PLAYERS) =====
@@ -909,8 +1281,9 @@ const MP_AI_NAMES=['🤖 Alpha','🤖 Beta','🤖 Gamma'];
 
 function startMP(){
   appState='game';gameMode='mp';
+  DS.streak=0;DS.maxStreak=0;DS.hands=0;DS.wins=0;DS.maxPot=0;DS.bestHandCat=-1;DS.bestHandName='—';DS.chipHistory=[1000];DS.achievements=new Set();DS.startChips=1000;
   const n=gameSettings.numPlayers;
-  const names=['あなた',...MP_AI_NAMES.slice(0,n-1)];
+  const names=[t('あなた','You'),...MP_AI_NAMES.slice(0,n-1)];
   MP_G={
     players:names.map((name,i)=>({name,chips:1000,hand:[],bet:0,acted:false,folded:false,isPlayer:i===0})),
     pot:0,community:[],currentBet:0,phase:'preflop',dealerIdx:0,
@@ -923,9 +1296,9 @@ function mpNewHand(){
   const mp=MP_G,n=mp.players.length;
   const alive=mp.players.filter(p=>p.chips>0);
   if(alive.length===1){mp.gameOver=true;mp.gameWinner=alive[0].name;renderMP();return;}
-  if(mp.players[0].chips<=0){mp.gameOver=true;mp.gameWinner='AIの勝ち';renderMP();return;}
+  if(mp.players[0].chips<=0){mp.gameOver=true;mp.gameWinner=t('AIの勝ち','AI wins');renderMP();return;}
   mp.handCount++;
-  document.getElementById('handNum').textContent='ハンド #'+mp.handCount;
+  document.getElementById('handNum').textContent=t('ハンド','Hand')+' #'+mp.handCount;
   const deck=shuffle(mkDeck());
   mp.players.forEach(p=>{p.hand=[deck.pop(),deck.pop()];p.bet=0;p.acted=false;p.folded=p.chips<=0;});
   mp.community=[];mp.pot=0;mp.phase='preflop';mp.showdown=false;mp.message='';mp.currentBet=BB;
@@ -939,6 +1312,7 @@ function mpNewHand(){
   mp.activeIdx=mpNextActive((bbIdx+1)%n);
   mp.deck=deck;
   renderMP();
+  dopamineOnDeal();
   if(!mp.players[mp.activeIdx].isPlayer)setTimeout(mpDoAI,1800);
 }
 
@@ -958,19 +1332,19 @@ async function mpPlayerAct(action,amount){
   const toCall=Math.max(0,mp.currentBet-p.bet);
   const canCheck=toCall===0;
   const actKey=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
-  const verbMap={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbMap={fold:t('フォールド','Fold'),check:t('チェック','Check'),call:t('コール','Call'),raise:t('レイズ','Raise')};
   const verbEmoji={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
   let chipText='';
   if(action==='fold'){p.folded=true;}
-  else if(action==='call'){const a=Math.min(toCall,p.chips);p.chips-=a;p.bet+=a;mp.pot+=a;chipText=a+'チップ';}
+  else if(action==='call'){const a=Math.min(toCall,p.chips);p.chips-=a;p.bet+=a;mp.pot+=a;chipText=a+' '+t('チップ','chips');}
   else if(action==='raise'){
     const total=Math.min(amount,p.chips+p.bet);
-    const a=total-p.bet;p.chips-=a;p.bet=total;mp.pot+=a;mp.currentBet=total;chipText='→ 合計 '+total+'チップ';
+    const a=total-p.bet;p.chips-=a;p.bet=total;mp.pot+=a;mp.currentBet=total;chipText=t('→ 合計','→ Total ')+total+' '+t('チップ','chips');
     mp.players.forEach((pl,i)=>{if(i!==0&&!pl.folded)pl.acted=false;});
   }
   p.acted=true;
   renderMP();
-  await showCutin({avatar:verbEmoji[actKey],actor:'あなたの行動',verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(MY_FLAVOR,actKey),isPlayer:true});
+  await showCutin({avatar:verbEmoji[actKey],actor:t('あなたの行動','Your Action'),verb:verbMap[actKey],amount:chipText,flavor:pickFlavor(MY_FLAVOR,actKey),isPlayer:true});
   // フォールド後スキップ：3人以上かつオンの場合は即ショーダウンへ飛ばす
   if(action==='fold'&&gameSettings.autoFoldSkip&&mp.players.length>=3){
     mp.showdown=true;
@@ -978,7 +1352,7 @@ async function mpPlayerAct(action,amount){
     const remain=mp.players.filter(q=>!q.folded);
     if(remain.length===1){
       remain[0].chips+=mp.pot;mp.pot=0;
-      mp.message='🏆 '+remain[0].name+' の勝ち！（あなたがフォールドしました）';
+      mp.message='🏆 '+remain[0].name+' '+t('の勝ち！（あなたがフォールドしました）','wins! (You folded)');
     }else{
       // 全員のハンドを決めてポット山分け
       let best=-1,winners=[];
@@ -990,7 +1364,7 @@ async function mpPlayerAct(action,amount){
         if(h.score>best){best=h.score;winners=[q];}else if(h.score===best)winners.push(q);
       });
       const share=Math.floor(mp.pot/winners.length);winners.forEach(q=>q.chips+=share);mp.pot=0;
-      mp.message='⏭️ スキップ — '+(winners.length===1?'🏆 '+winners[0].name+' の勝ち！ ('+winners[0]._hname+')':'引き分け！');
+      mp.message='⏭️ '+t('スキップ','Skip')+' — '+(winners.length===1?'🏆 '+winners[0].name+' '+t('の勝ち！','wins!')+'('+hn(winners[0]._hname)+')':t('引き分け！','Draw!'));
     }
     mp.dealerIdx=(mp.dealerIdx+1)%mp.players.length;
     renderMP();return;
@@ -1004,7 +1378,7 @@ function mpCheckRound(){
   // Only one left?
   if(active.length===1){
     active[0].chips+=mp.pot;mp.pot=0;
-    mp.message=(active[0].isPlayer?'🎉 あなたの勝ち！':'🏆 '+active[0].name+' の勝ち！')+' — みんながフォールドしました';
+    mp.message=(active[0].isPlayer?'🎉 '+t('あなたの勝ち！','You win!'):'🏆 '+active[0].name+' '+t('の勝ち！','wins!'))+' — '+t('みんながフォールドしました','All others folded');
     mp.showdown=true;renderMP();return;
   }
   // Round over if all active have acted and bets equal
@@ -1040,11 +1414,11 @@ async function mpDoAI(){
   if(action==='raise'){raiseAmt=Math.min(raiseAmt||mp.currentBet+BB*2,ai.chips+ai.bet);if(raiseAmt<=mp.currentBet)action='call';}
   const toCall2=Math.max(0,mp.currentBet-ai.bet);
   const actKeyM=action==='fold'?'fold':(canCheck&&action==='call')?'check':action==='call'?'call':'raise';
-  const verbMapM={fold:'フォールド',check:'チェック',call:'コール',raise:'レイズ'};
+  const verbMapM={fold:t('フォールド','Fold'),check:t('チェック','Check'),call:t('コール','Call'),raise:t('レイズ','Raise')};
   const verbEmojiM={fold:'🗑️',check:'✋',call:'📞',raise:'⬆️'};
-  const chipTextM=action==='call'?Math.min(toCall2,ai.chips)+'チップ':action==='raise'?'→ 合計 '+Math.min(raiseAmt,ai.chips+ai.bet)+'チップ':'';
+  const chipTextM=action==='call'?Math.min(toCall2,ai.chips)+' '+t('チップ','chips'):action==='raise'?t('→ 合計','→ Total')+' '+Math.min(raiseAmt,ai.chips+ai.bet)+' '+t('チップ','chips'):'';
   renderMP();
-  await showCutin({avatar:verbEmojiM[actKeyM],actor:ai.name+' の行動',verb:verbMapM[actKeyM],amount:chipTextM,flavor:pickFlavor(AI_FLAVOR,actKeyM),isPlayer:false});
+  await showCutin({avatar:verbEmojiM[actKeyM],actor:ai.name+' '+t('の行動','action'),verb:verbMapM[actKeyM],amount:chipTextM,flavor:pickFlavor(AI_FLAVOR,actKeyM),isPlayer:false});
   if(action==='fold'){ai.folded=true;}
   else if(action==='call'){const a=Math.min(toCall2,ai.chips);ai.chips-=a;ai.bet+=a;mp.pot+=a;}
   else if(action==='raise'){
@@ -1061,9 +1435,9 @@ function mpNextPhase(){
   mp.currentBet=0;
   mp.activeIdx=mpNextActive((mp.dealerIdx+1)%n);
   switch(mp.phase){
-    case'preflop':mp.phase='flop';mp.community.push(mp.deck.pop(),mp.deck.pop(),mp.deck.pop());mp.message='フロップ：共有カード3枚が公開！';break;
-    case'flop':mp.phase='turn';mp.community.push(mp.deck.pop());mp.message='ターン：4枚目が公開！';break;
-    case'turn':mp.phase='river';mp.community.push(mp.deck.pop());mp.message='リバー：最後のカード！';break;
+    case'preflop':mp.phase='flop';mp.community.push(mp.deck.pop(),mp.deck.pop(),mp.deck.pop());mp.message=t('フロップ：共有カード3枚が公開！','Flop: 3 community cards revealed!');break;
+    case'flop':mp.phase='turn';mp.community.push(mp.deck.pop());mp.message=t('ターン：4枚目が公開！','Turn: 4th card revealed!');break;
+    case'turn':mp.phase='river';mp.community.push(mp.deck.pop());mp.message=t('リバー：最後のカード！','River: Final card!');break;
     case'river':mpShowdown();return;
   }
   renderMP();
@@ -1080,8 +1454,10 @@ function mpShowdown(){
   winners.forEach(p=>p.chips+=share);mp.pot=0;
   if(winners.length===1){
     const w=winners[0];
-    mp.message=(w.isPlayer?'🎉 あなたの勝ち！':'🏆 '+w.name+' の勝ち！')+' ('+w._hname+')';
-  }else{mp.message='引き分け！ ('+winners.map(w=>w.name).join('、')+')';}
+    mp.message=(w.isPlayer?'🎉 '+t('あなたの勝ち！','You win!'):'🏆 '+w.name+' '+t('の勝ち！','wins!'))+' ('+hn(w._hname)+')';
+    if(w.isPlayer)setTimeout(()=>dopamineOnWin(share,w._score?bestHand([...w.hand,...mp.community]).cat:-1,hn(w._hname),mp.players[0].chips,false),100);
+    else setTimeout(()=>dopamineOnLoss(mp.players[0].chips),100);
+  }else{mp.message=t('引き分け！','Draw!')+'('+winners.map(w=>w.name).join(', ')+')';}
   mp.dealerIdx=(mp.dealerIdx+1)%mp.players.length;
   renderMP();
 }
@@ -1089,13 +1465,13 @@ function mpShowdown(){
 function renderMP(){
   const mp=MP_G,root=document.getElementById('root');
   if(mp.gameOver){
-    root.innerHTML='<div class="game-over-screen"><h2>'+(mp.gameWinner==='あなた'?'🎉':'💀')+'</h2><h2>'+mp.gameWinner+'の勝利！</h2>'+'<p>'+(mp.gameWinner==='あなた'?'おめでとうございます！':'残念…また挑戦しよう！')+'</p>'+'<button class="btn-primary" onclick="showAIMenu()">もう一度プレイ</button>'+'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:8px;">メニューへ戻る</button></div>';
+    root.innerHTML='<div class="game-over-screen"><h2>'+(mp.gameWinner===t('あなた','You')?'🎉':'💀')+'</h2><h2>'+mp.gameWinner+t('の勝利！',' wins!')+'</h2>'+'<p>'+(mp.gameWinner===t('あなた','You')?t('おめでとうございます！','Congratulations!'):t('残念…また挑戦しよう！','Better luck next time!'))+'</p>'+'<button class="btn-primary" onclick="showAIMenu()">'+t('もう一度プレイ','Play Again')+'</button>'+'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:8px;">'+t('メニューへ戻る','Main Menu')+'</button></div>';
     return;
   }
   const pl=mp.players[0];
   const toCall=Math.max(0,mp.currentBet-pl.bet),canCheck=toCall===0;
   const isMyTurn=!!(mp.players[mp.activeIdx]&&mp.players[mp.activeIdx].isPlayer&&!mp.showdown);
-  const phInfo=PHASE_INFO[mp.phase]||{name:'',desc:''};
+  const phInfo=getPhaseInfo(mp.phase);
   // Opponent cards top row
   const oppHTML=mp.players.slice(1).map((p,i)=>{
     const realIdx=i+1;
@@ -1107,9 +1483,9 @@ function renderMP(){
       '<div class="hand-row" style="justify-content:center;margin:4px 0;">'+(mp.showdown&&!p.folded?p.hand.map(c=>cardH(c,false)).join(''):['',''].map(()=>'<div class="card back" style="width:38px;height:55px;font-size:20px;"></div>').join(''))+'</div>'+
       (hInfo?'<div style="font-size:11px;color:#38bdf8;font-weight:600;margin:2px 0;">'+hInfo.emoji+' '+ev.name+'</div>':'')+
       '<div class="mp-opp-chips">💰 '+p.chips+'</div>'+
-      '<div class="mp-opp-bet">'+(p.bet>0&&!mp.showdown?'ベット: '+p.bet:'')+'</div>'+
+      '<div class="mp-opp-bet">'+(p.bet>0&&!mp.showdown?t('ベット','Bet')+': '+p.bet:'')+'</div>'+
       '<div class="mp-opp-status" style="color:'+(isActive?'#fbbf24':p.folded?'#6b7280':'#374151')+'">'+
-      (p.folded?'🗑️ フォールド':isActive?'⚡ 考え中':'')+'</div></div>';
+      (p.folded?'🗑️ '+t('フォールド','Folded'):isActive?'⚡ '+t('考え中','Thinking'):'')+'</div></div>';
   }).join('');
   // Player's hand eval
   const myEval=pl.hand.length===2?(mp.community.length>=3?bestHand([...pl.hand,...mp.community]):(mp.community.length===0&&pl.hand[0].rank===pl.hand[1].rank?{cat:1,name:'ワンペア',score:100}:null)):null;
@@ -1119,19 +1495,19 @@ function renderMP(){
     '<div class="community-zone">'+
     '<div class="phase-block"><div class="phase-name">'+phInfo.name+'</div><div class="phase-desc">'+phInfo.desc+'</div></div>'+
     '<div class="community-cards">'+mp.community.map(c=>cardH(c,false)).join('')+Array(5-mp.community.length).fill('<div class="card placeholder"></div>').join('')+'</div>'+
-    '<div class="pot-display">🏆 ポット: '+mp.pot+'チップ</div>'+
+    '<div class="pot-display">🏆 '+t('ポット','Pot')+': '+mp.pot+' '+t('チップ','chips')+'</div>'+
     '<div class="msg-box'+(mp.message&&mp.message.startsWith('🎉')?' win':'')+'">'+mp.message+'</div>'+
     '</div>'+
     '<hr class="divider">'+
     '<div class="zone">'+hnH(myEval,!!myEval)+
     '<div class="hand-row">'+pl.hand.map(c=>cardH(c,false)).join('')+'</div>'+
-    (pl.bet>0&&!mp.showdown?'<div class="bet-label">ベット中: '+pl.bet+'</div>':'')+
-    '<div class="chips-label">💰 '+pl.chips+'チップ</div>'+
-    '<div class="zone-label">あなた '+(mp.dealerIdx===0?'<span class="d-badge">D</span>':'')+'</div>'+
+    (pl.bet>0&&!mp.showdown?'<div class="bet-label">'+t('ベット中','Bet')+': '+pl.bet+'</div>':'')+
+    '<div class="chips-label">💰 '+pl.chips+' '+t('チップ','chips')+'</div>'+
+    '<div class="zone-label">'+t('あなた','You')+' '+(mp.dealerIdx===0?'<span class="d-badge">D</span>':'')+'</div>'+
     '</div></div>';
   const actHTML='<div class="action-area">'+
-    (mp.showdown?'<button class="btn-next" onclick="mpNextHand()">次のハンドへ ▶</button>':
-    !isMyTurn?'<div class="waiting-label">⌛ '+(mp.players[mp.activeIdx]?mp.players[mp.activeIdx].name:'...')+' が考えています…</div>':
+    (mp.showdown?'<button class="btn-next" onclick="mpNextHand()">'+t('次のハンドへ','Next Hand')+' ▶</button>':
+    !isMyTurn?'<div class="waiting-label">⌛ '+(mp.players[mp.activeIdx]?mp.players[mp.activeIdx].name:'...')+' '+t('が考えています…','is thinking...')+'</div>':
     actionH(true,false,canCheck,toCall,pl.chips,mp.currentBet,pl.bet))+
     '</div>';
   const suppHTML=supportH(pl.hand,mp.community,mp.currentBet,pl.bet,mp.pot,mp.showdown);
@@ -1152,7 +1528,7 @@ function dpC(p){return p>=30?'high':p>=18?'medium':'low';}
 function hnH(ev,show){
   if(!show||!ev||ev.cat<0)return'<div class="hand-name-box"></div>';
   const i=HAND_INFO[ev.name]||{emoji:'🃏',short:''};
-  return'<div class="hand-name-box"><div class="hand-name-main">'+i.emoji+' '+ev.name+'</div><div class="hand-name-desc">'+i.short+'</div></div>';
+  return'<div class="hand-name-box"><div class="hand-name-main">'+i.emoji+' '+hn(ev.name)+'</div><div class="hand-name-desc">'+i.short+'</div></div>';
 }
 function supportH(myHand,comm,currentBet,myBet,pot,handOver){
   if(handOver)return'';
@@ -1163,45 +1539,46 @@ function supportH(myHand,comm,currentBet,myBet,pot,handOver){
   const potOddsPct=toCall>0?Math.round(toCall/(pot+toCall)*100):0;
   const wc=p2c(winPct);
   const basis=getWinBasis(myHand,comm);
-  let html='<div class="support-panel"><div class="support-header"><span class="support-title">📊 サポート情報</span><button class="btn-sm" onclick="openRules()">📖 用語・ルール</button></div>';
-  html+='<div class="stat-row"><label>あなたの勝率</label><div class="bar-track"><div class="bar-fill" style="width:'+winPct+'%;background:'+wc+'"></div></div><span class="bar-val" style="color:'+wc+'">'+winPct+'%</span></div>';
-  if(basis){let bHtml='<div class="win-basis"><span class="wb-label">根拠：</span><span class="wb-hand">'+basis.hand+'</span>';if(basis.draws)bHtml+='　＋　<span class="wb-draw">'+basis.draws+'</span>';bHtml+='<br><span style="font-size:10px;color:#4b5563">※ 残りのカードをランダムにシミュレーションして算出</span></div>';html+=bHtml;}
-  if(toCall>0){const ok=winPct>=potOddsPct;html+='<div class="odds-row"><span>コールに必要な勝率: <span class="odds-val">'+potOddsPct+'%</span></span><span class="odds-badge '+(ok?'odds-ok':'odds-warn')+'">'+(ok?'✓ 勝率'+winPct+'% ≥ '+potOddsPct+'% → コール有利':'✗ 勝率'+winPct+'% < '+potOddsPct+'% → 注意')+'</span></div>';}
-  if(draws.length>0){html+='<div class="draws-section"><div class="section-label">🎯 チャンスのカード</div>'+draws.map(d=>'<div class="draw-item"><span class="draw-icon">'+d.icon+'</span><div class="draw-info"><div class="draw-name">'+d.name+'</div><div class="draw-plain">'+d.plain+'</div></div><span class="draw-pct '+dpC(d.pct)+'">'+d.pct+'%<br><span style="font-size:9px;font-weight:400;color:#9ca3af">'+(d.tocome===2?'2枚で':'次1枚')+'</span></span></div>').join('')+'</div>';}
-  else if(comm.length>0)html+='<div class="no-data" style="margin:6px 0">現在ドローなし</div>';
+  let html='<div class="support-panel"><div class="support-header"><span class="support-title">📊 '+t('サポート情報','Stats')+'</span><button class=\"btn-sm\" onclick=\"openRules()\">📖 '+t('用語・ルール','Rules')+'</button></div>';
+  html+='<div class="stat-row"><label>'+t('あなたの勝率','Win Rate')+'</label><div class="bar-track"><div class="bar-fill" style="width:'+winPct+'%;background:'+wc+'"></div></div><span class="bar-val" style="color:'+wc+'">'+winPct+'%</span></div>';
+  if(basis){let bHtml='<div class="win-basis"><span class="wb-label">'+t('根拠：','Basis: ')+'</span><span class="wb-hand">'+basis.hand+'</span>';if(basis.draws)bHtml+='　＋　<span class="wb-draw">'+basis.draws+'</span>';bHtml+='<br><span style="font-size:10px;color:#4b5563">'+t('※ 残りのカードをランダムにシミュレーションして算出','* Estimated via random simulation')+'</span></div>';html+=bHtml;}
+  if(toCall>0){const ok=winPct>=potOddsPct;html+='<div class="odds-row"><span>'+t('コールに必要な勝率','Min win rate to call')+': <span class="odds-val">'+potOddsPct+'%</span></span><span class="odds-badge '+(ok?'odds-ok':'odds-warn')+'">'+(ok?t('✓ 勝率','✓ Win%')+winPct+'% ≥ '+potOddsPct+'% → '+t('コール有利','Worth calling'):t('✗ 勝率','✗ Win%')+winPct+'% < '+potOddsPct+'% → '+t('注意','Caution'))+'</span></div>';}
+  if(draws.length>0){html+='<div class="draws-section"><div class="section-label">🎯 '+t('チャンスのカード','Drawing Hands')+'</div>'+draws.map(d=>'<div class="draw-item"><span class="draw-icon">'+d.icon+'</span><div class="draw-info"><div class="draw-name">'+d.name+'</div><div class="draw-plain">'+d.plain+'</div></div><span class="draw-pct '+dpC(d.pct)+'">'+d.pct+'%<br><span style="font-size:9px;font-weight:400;color:#9ca3af">'+(d.tocome===2?t('2枚で','2 cards'):t('次1枚','next'))+'</span></span></div>').join('')+'</div>';}
+  else if(comm.length>0)html+='<div class="no-data" style="margin:6px 0">'+t('現在ドローなし','No draws')+'</div>';
   if(tip)html+='<div class="tip-box" style="border-left-color:'+tip.color+'"><span class="tip-icon">'+tip.icon+'</span><div><div class="tip-main" style="color:'+tip.color+'">'+tip.main+'</div><div class="tip-reason">'+tip.reason+'</div></div></div>';
+  html+='<div style="text-align:center"><button class="stats-btn" onclick="openStats()">📊 '+t('スタッツ','Stats')+'</button></div>';
   html+='</div>';
   return html;
 }
 function actionH(myTurn,handOver,canCheck,toCall,myChips,currentBet,myBet){
   const maxR=myChips+myBet,minR=Math.min(currentBet+BB,maxR),defR=Math.min(minR+BB,maxR);
-  if(handOver)return'<button class="btn-next" onclick="onNextHand()">次のハンドへ ▶</button>';
-  if(!myTurn)return'<div class="waiting-label">⌛ 相手が考えています…</div>';
+  if(handOver)return'<button class="btn-next" onclick="onNextHand()">'+t('次のハンドへ','Next Hand')+' ▶</button>';
+  if(!myTurn)return'<div class="waiting-label">⌛ '+t('相手が考えています…','Opponent is thinking...')+'</div>';
   // Situation label explaining current bet state
   let sitLabel='';
   if(canCheck&&myBet===0&&currentBet===0){
-    sitLabel='<div class="sit-label">💡 誰もベットしていません — チェック（タダでパス）またはベット（先に出す）できます</div>';
+    sitLabel='<div class="sit-label">💡 '+t('誰もベットしていません — チェック（タダでパス）またはベット（先に出す）できます','No one has bet — you can Check (free pass) or Bet (put chips in first)')+'</div>';
   }else if(canCheck&&myBet>0){
-    sitLabel='<div class="sit-label">💡 あなたのベット '+myBet+'チップ と相手が揃っています — チェックで次のフェーズへ進めます</div>';
+    sitLabel='<div class="sit-label">💡 '+t('あなたのベット ','Your bet: ')+myBet+' '+t('チップ と相手が揃っています — チェックで次のフェーズへ進めます','chips matches — Check to advance')+'</div>';
   }else if(toCall>0){
-    sitLabel='<div class="sit-label">💡 あなた '+myBet+'チップ ／ 相手 '+currentBet+'チップ — 差額の <b>'+Math.min(toCall,myChips)+'チップ</b> を追加すればコールです</div>';
+    sitLabel='<div class="sit-label">💡 '+t('あなた ','You: ')+myBet+' '+t('チップ ／ 相手 ','chips / Opp: ')+currentBet+' '+t('チップ — 差額の','chips — add')+' <b>'+Math.min(toCall,myChips)+'</b> '+t('チップを追加すればコールです','chips to call')+'</div>';
   }
-  return sitLabel+'<div class="btn-row"><div class="btn-group"><button class="btn-fold" onclick="onFold()">フォールド</button><span class="btn-sublabel">手を捨てて降りる</span></div>'
-    +'<div class="btn-group"><button class="btn-call" onclick="onCall()">'+(canCheck?'チェック':'コール ('+Math.min(toCall,myChips)+')')+'</button><span class="btn-sublabel">'+(canCheck?'タダでパス（0チップ）':'差額を追加して合わせる')+'</span></div>'
-    +'<div class="btn-group"><button class="btn-raise" onclick="onRaise()"'+(maxR<=currentBet?' disabled':'')+'>レイズ</button><span class="btn-sublabel">上乗せして攻める</span></div></div>'
-    +(maxR>currentBet?'<div class="raise-ctrl"><label>レイズ額</label><input type="range" id="rs" min="'+minR+'" max="'+maxR+'" value="'+defR+'" step="'+BB+'" oninput="document.getElementById(\'rv\').textContent=this.value"><span class="raise-val" id="rv">'+defR+'</span><span style="font-size:11px;color:#6b7280">チップ</span></div>':'');
+  return sitLabel+'<div class="btn-row"><div class="btn-group"><button class="btn-fold" onclick="onFold()">'+t('フォールド','Fold')+'</button><span class="btn-sublabel">'+t('手を捨てて降りる','Discard & quit')+'</span></div>'
+    +'<div class="btn-group"><button class="btn-call" onclick="onCall()">'+(canCheck?t('チェック','Check'):t('コール','Call')+' ('+Math.min(toCall,myChips)+')')+'</button><span class="btn-sublabel">'+(canCheck?t('タダでパス（0チップ）','Free pass (0 chips)'):t('差額を追加して合わせる','Match the bet'))+'</span></div>'
+    +'<div class="btn-group"><button class="btn-raise" onclick="onRaise()"'+(maxR<=currentBet?' disabled':'')+'>'+t('レイズ','Raise')+'</button><span class="btn-sublabel">'+t('上乗せして攻める','Increase the bet')+'</span></div></div>'
+    +(maxR>currentBet?'<div class="raise-ctrl"><label>'+t('レイズ額','Raise amount')+'</label><input type="range" id="rs" min="'+minR+'" max="'+maxR+'" value="'+defR+'" step="'+BB+'" oninput="document.getElementById(\'rv\').textContent=this.value"><span class="raise-val" id="rv">'+defR+'</span><span style="font-size:11px;color:#6b7280">' + t('チップ','chips') + '</span></div>':'');
 }
 function tableH(myHand,opponentHand,community,phase,pot,myChips,opponentChips,myBet,opponentBet,dealerIsMe,myTurn,handOver,message,isOnline,opponentLabel){
   const hasComm=community.length>=3;
   const myEval=myHand&&myHand.length===2?(community.length>=3?bestHand([...myHand,...community]):(community.length===0&&myHand[0].rank===myHand[1].rank?{cat:1,name:'ワンペア',score:100}:null)):null;
   const opEval=opponentHand&&hasComm?bestHand([...opponentHand,...community]):null;
-  const phInfo=PHASE_INFO[phase]||{name:'',desc:''};
+  const phInfo=getPhaseInfo(phase);
   const toCall=Math.max(0,(community.length>=0?0:0)); // just for display
   return'<div class="table">'
     +'<div class="zone">'
-    +'<div class="zone-label">'+(opponentLabel||'相手')+' '+(!dealerIsMe?'<span class="d-badge">D</span>':'')+(isOnline?'<span class="online-badge">🟢 オンライン</span>':'')+'</div>'
-    +'<div class="chips-label">💰 '+opponentChips.toLocaleString()+'チップ</div>'
-    +(opponentBet>0?'<div class="bet-label">ベット中: '+opponentBet+'</div>':'')
+    +'<div class="zone-label">'+(opponentLabel||t('相手','Opp'))+' '+(!dealerIsMe?'<span class="d-badge">D</span>':'')+(isOnline?'<span class="online-badge">🟢 '+t('オンライン','Online')+'</span>':'')+'</div>'
+    +'<div class="chips-label">💰 '+opponentChips.toLocaleString()+' '+t('チップ','chips')+'</div>'
+    +(opponentBet>0?'<div class="bet-label">'+t('ベット中','Bet')+': '+opponentBet+'</div>':'')
     +'<div class="hand-row">'+(opponentHand?opponentHand.map(c=>cardH(c,false)).join(''):['',''].map(()=>'<div class="card back"></div>').join(''))+'</div>'
     +hnH(opEval,!!opponentHand&&hasComm)
     +'</div>'
@@ -1209,16 +1586,16 @@ function tableH(myHand,opponentHand,community,phase,pot,myChips,opponentChips,my
     +'<div class="community-zone">'
     +'<div class="phase-block"><div class="phase-name">'+phInfo.name+'</div><div class="phase-desc">'+phInfo.desc+'</div></div>'
     +'<div class="community-cards">'+community.map(c=>cardH(c,false)).join('')+Array(5-community.length).fill('<div class="card placeholder"></div>').join('')+'</div>'
-    +'<div class="pot-display">🏆 ポット: '+pot.toLocaleString()+'チップ</div>'
+    +'<div class="pot-display">🏆 '+t('ポット','Pot')+': '+pot.toLocaleString()+' '+t('チップ','chips')+'</div>'
     +'<div class="msg-box'+(message&&message.startsWith('🎉')?' win':'')+'">'+message+'</div>'
     +'</div>'
     +'<hr class="divider">'
     +'<div class="zone">'
     +hnH(myEval,!!myEval&&myHand&&myHand.length===2)
     +'<div class="hand-row">'+(myHand?myHand.map(c=>cardH(c,false)).join(''):'')+'</div>'
-    +(myBet>0?'<div class="bet-label">ベット中: '+myBet+'</div>':'')
-    +'<div class="chips-label">💰 '+myChips.toLocaleString()+'チップ</div>'
-    +'<div class="zone-label">あなた '+(dealerIsMe?'<span class="d-badge">D</span>':'')+'</div>'
+    +(myBet>0?'<div class="bet-label">'+t('ベット中','Bet')+': '+myBet+'</div>':'')
+    +'<div class="chips-label">💰 '+myChips.toLocaleString()+' '+t('チップ','chips')+'</div>'
+    +'<div class="zone-label">'+t('あなた','You')+' '+(dealerIsMe?'<span class="d-badge">D</span>':'')+'</div>'
     +'</div>'
     +'</div>';
 }
@@ -1229,10 +1606,10 @@ function renderMenu(){
   document.getElementById('root').innerHTML=
     '<div class="menu-screen">'
     +'<h2>🃏 Texas Hold\'em</h2>'
-    +'<p>対戦モードを選んでください</p>'
+    +'<p>'+t('対戦モードを選んでください','Select a game mode')+'</p>'
     +'<div class="menu-cards">'
-    +'<div class="menu-card" onclick="showAIMenu()"><div class="mc-icon">🤖</div><div class="mc-title">AI対戦</div><div class="mc-desc">人数・強さを選んで対戦</div></div>'
-    +'<div class="menu-card" onclick="showOnlineMenu()"><div class="mc-icon">🌐</div><div class="mc-title">オンライン対戦</div><div class="mc-desc">友達とリアルタイムで対戦</div></div>'
+    +'<div class="menu-card" onclick="showAIMenu()"><div class="mc-icon">🤖</div><div class="mc-title">'+t('AI対戦','vs AI')+'</div><div class="mc-desc">'+t('人数・強さを選んで対戦','Choose players & difficulty')+'</div></div>'
+    +'<div class="menu-card" onclick="showOnlineMenu()"><div class="mc-icon">🌐</div><div class="mc-title">'+t('オンライン対戦','Online')+'</div><div class="mc-desc">'+t('友達とリアルタイムで対戦','Play with friends in real time')+'</div></div>'
     +'</div></div>';
 }
 
@@ -1241,25 +1618,25 @@ function showAIMenu(){
   const d=gameSettings.difficulty,np=gameSettings.numPlayers;
   document.getElementById('root').innerHTML=
     '<div class="ai-menu">'
-    +'<h2 style="font-size:22px;font-weight:700;">🤖 AI対戦 設定</h2>'
+    +'<h2 style="font-size:22px;font-weight:700;">🤖 '+t('AI対戦 設定','AI Game Setup')+'</h2>'
     +'<div class="diff-section">'
-    +'<div class="diff-label">👥 対戦人数</div>'
+    +'<div class="diff-label">👥 '+t('対戦人数','Players')+'</div>'
     +'<div class="diff-row">'
-    +'<button class="diff-btn'+(np===2?' sel':'')+'" onclick="setPlayers(2)">🧑 1 vs 1<br><small style="font-weight:400;color:#9ca3af">あなた vs AI</small></button>'
-    +'<button class="diff-btn'+(np===3?' sel':'')+'" onclick="setPlayers(3)">🧑 vs 🤖×2<br><small style="font-weight:400;color:#9ca3af">3人対戦</small></button>'
-    +'<button class="diff-btn'+(np===4?' sel':'')+'" onclick="setPlayers(4)">🧑 vs 🤖×3<br><small style="font-weight:400;color:#9ca3af">4人対戦</small></button>'
+    +'<button class="diff-btn'+(np===2?' sel':'')+'" onclick="setPlayers(2)">🧑 1 vs 1<br><small style="font-weight:400;color:#9ca3af">'+t('あなた vs AI','You vs AI')+'</small></button>'
+    +'<button class="diff-btn'+(np===3?' sel':'')+'" onclick="setPlayers(3)">🧑 vs 🤖×2<br><small style="font-weight:400;color:#9ca3af">'+t('3人対戦','3 Players')+'</small></button>'
+    +'<button class="diff-btn'+(np===4?' sel':'')+'" onclick="setPlayers(4)">🧑 vs 🤖×3<br><small style="font-weight:400;color:#9ca3af">'+t('4人対戦','4 Players')+'</small></button>'
     +'</div>'
     +'</div>'
     +'<div class="diff-section">'
-    +'<div class="diff-label">💪 AIの強さ</div>'
+    +'<div class="diff-label">💪 '+t('AIの強さ','AI Difficulty')+'</div>'
     +'<div class="diff-row">'
-    +'<button class="diff-btn'+(d==='easy'?' sel':'')+'" onclick="setDiff(\'easy\')">😊 かんたん<br><small style="font-weight:400;color:#9ca3af">初心者向け</small></button>'
-    +'<button class="diff-btn'+(d==='normal'?' sel':'')+'" onclick="setDiff(\'normal\')">😐 ふつう<br><small style="font-weight:400;color:#9ca3af">バランス型</small></button>'
-    +'<button class="diff-btn'+(d==='hard'?' sel':'')+'" onclick="setDiff(\'hard\')">😈 むずかしい<br><small style="font-weight:400;color:#9ca3af">上級者向け</small></button>'
+    +'<button class="diff-btn'+(d==='easy'?' sel':'')+'" onclick="setDiff(\'easy\')">😊 '+t('かんたん','Easy')+'<br><small style="font-weight:400;color:#9ca3af">'+t('初心者向け','Beginners')+'</small></button>'
+    +'<button class="diff-btn'+(d==='normal'?' sel':'')+'" onclick="setDiff(\'normal\')">😐 '+t('ふつう','Normal')+'<br><small style="font-weight:400;color:#9ca3af">'+t('バランス型','Balanced')+'</small></button>'
+    +'<button class="diff-btn'+(d==='hard'?' sel':'')+'" onclick="setDiff(\'hard\')">😈 '+t('むずかしい','Hard')+'<br><small style="font-weight:400;color:#9ca3af">'+t('上級者向け','Advanced')+'</small></button>'
     +'</div>'
     +'</div>'
-    +'<button class="btn-primary" onclick="startGame()" style="padding:13px 48px;font-size:16px;border-radius:14px;">ゲームスタート ▶</button>'
-    +'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:2px;">← 戻る</button>'
+    +'<button class="btn-primary" onclick="startGame()" style="padding:13px 48px;font-size:16px;border-radius:14px;">'+t('ゲームスタート','Game Start')+' ▶</button>'
+    +'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:2px;">← '+t('戻る','Back')+'</button>'
     +'</div>';
 }
 function setDiff(d){gameSettings.difficulty=d;showAIMenu();}
@@ -1271,36 +1648,36 @@ function startGame(){
 function showOnlineMenu(){
   document.getElementById('root').innerHTML=
     '<div class="lobby-screen">'
-    +'<h2>🌐 オンライン対戦</h2>'
+    +'<h2>🌐 '+t('オンライン対戦','Online Game')+'</h2>'
     +'<div class="menu-cards">'
-    +'<div class="menu-card" onclick="mpCreate()"><div class="mc-icon">🏠</div><div class="mc-title">ルームを作る</div><div class="mc-desc">コードを友達に共有</div></div>'
-    +'<div class="menu-card" onclick="showJoinUI()"><div class="mc-icon">🚪</div><div class="mc-title">ルームに入る</div><div class="mc-desc">コードを入力して参加</div></div>'
+    +'<div class="menu-card" onclick="mpCreate()"><div class="mc-icon">🏠</div><div class="mc-title">'+t('ルームを作る','Create Room')+'</div><div class="mc-desc">'+t('コードを友達に共有','Share code with friends')+'</div></div>'
+    +'<div class="menu-card" onclick="showJoinUI()"><div class="mc-icon">🚪</div><div class="mc-title">'+t('ルームに入る','Join Room')+'</div><div class="mc-desc">'+t('コードを入力して参加','Enter code to join')+'</div></div>'
     +'</div>'
-    +'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:8px;">← 戻る</button>'
+    +'<button class="btn-secondary" onclick="renderMenu()" style="margin-top:8px;">← '+t('戻る','Back')+'</button>'
     +'</div>';
 }
 function showJoinUI(){
   document.getElementById('root').innerHTML=
     '<div class="lobby-screen">'
-    +'<h2>🚪 ルームに入る</h2>'
-    +'<p style="font-size:13px;color:#6b7280;text-align:center;">友達から受け取った6文字のコードを入力してください</p>'
-    +'<div class="input-group"><input id="codeInput" maxlength="6" placeholder="例：ABC123" oninput="this.value=this.value.toUpperCase()"></div>'
-    +'<button class="btn-primary" onclick="mpJoin(document.getElementById(\'codeInput\').value.trim())">接続する</button>'
+    +'<h2>🚪 '+t('ルームに入る','Join Room')+'</h2>'
+    +'<p style="font-size:13px;color:#6b7280;text-align:center;">'+t('友達から受け取った6文字のコードを入力してください','Enter the 6-letter code from your friend')+'</p>'
+    +'<div class="input-group"><input id="codeInput" maxlength="6" placeholder="e.g. ABC123" oninput="this.value=this.value.toUpperCase()"></div>'
+    +'<button class="btn-primary" onclick="mpJoin(document.getElementById(\'codeInput\').value.trim())">'+t('接続する','Connect')+'</button>'
     +'<div class="status-box" id="joinStatus"></div>'
-    +'<button class="btn-secondary" onclick="showOnlineMenu()">← 戻る</button>'
+    +'<button class="btn-secondary" onclick="showOnlineMenu()">← '+t('戻る','Back')+'</button>'
     +'</div>';
 }
 function renderLobbyHost(code,status,ready){
   document.getElementById('root').innerHTML=
     '<div class="lobby-screen">'
-    +'<h2>🏠 ルームを作成しました</h2>'
+    +'<h2>🏠 '+t('ルームを作成しました','Room Created')+'</h2>'
     +'<div class="room-code-box">'
-    +'<div class="label">このコードを友達に共有してください</div>'
+    +'<div class="label">'+t('このコードを友達に共有してください','Share this code with your friend')+'</div>'
     +'<div class="code">'+code+'</div>'
-    +'<div class="sublabel">友達がこのコードを入力して参加します</div>'
+    +'<div class="sublabel">'+t('友達がこのコードを入力して参加します','Your friend enters this code to join')+'</div>'
     +'</div>'
     +'<div class="status-box '+(ready?'ok':'')+'">'+status+'</div>'
-    +'<button class="btn-secondary" onclick="cleanupAndMenu()">← キャンセル</button>'
+    +'<button class="btn-secondary" onclick="cleanupAndMenu()">← '+t('キャンセル','Cancel')+'</button>'
     +'</div>';
 }
 function renderLobbyJoin(status,cls){
@@ -1317,10 +1694,10 @@ function cleanupAndMenu(){
 function renderAI(){
   const g=AI_G;
   if(g.gameOver){
-    document.getElementById('root').innerHTML='<div class="game-over-screen"><h2>'+(g.gameWinner==='あなた'?'🎉':'💀')+'</h2><h2>'+g.gameWinner+'の勝利！</h2><p>'+(g.gameWinner==='あなた'?'おめでとうございます！':'残念…また挑戦しよう！')+'</p><button class="btn-primary" onclick="renderMenu()">メニューへ戻る</button></div>';
+    document.getElementById('root').innerHTML='<div class="game-over-screen"><h2>'+(g.gameWinner===t('あなた','You')?'🎉':'💀')+'</h2><h2>'+g.gameWinner+t('の勝利！',' wins!')+'</h2><p>'+(g.gameWinner===t('あなた','You')?t('おめでとうございます！','Congratulations!'):t('残念…また挑戦しよう！','Better luck next time!'))+'</p><button class="btn-primary" onclick="renderMenu()">'+t('メニューへ戻る','Main Menu')+'</button></div>';
     return;
   }
-  document.getElementById('handNum').textContent='ハンド #'+g.handCount;
+  document.getElementById('handNum').textContent=t('ハンド #','Hand #')+g.handCount;
   const toCall=Math.max(0,g.currentBet-g.playerBet),canCheck=toCall===0;
   const tH=tableH(g.playerHand,g.showAI?g.aiHand:null,g.community,g.phase,g.pot,g.playerChips,g.aiChips,g.playerBet,g.aiBet,g.dealerIsPlayer,g.playerTurn,g.handOver,g.message,false,'AI');
   const aH=actionH(g.playerTurn,g.handOver,canCheck,toCall,g.playerChips,g.currentBet,g.playerBet);
@@ -1332,14 +1709,14 @@ function render(){
   const v=V;
   if(!v||!v.myHand)return;
   if(v.gameOver){
-    const iWon=v.gameWinner==='あなた';
-    document.getElementById('root').innerHTML='<div class="game-over-screen"><h2>'+(iWon?'🎉':'💀')+'</h2><h2>'+v.gameWinner+'の勝利！</h2><p>'+(iWon?'おめでとうございます！':'残念…また挑戦しよう！')+'</p>'+(isHost?'<button class="btn-primary" onclick="startOnlineGame()">もう一度プレイ</button>':'<div style="font-size:13px;color:#6b7280">ホストが次のゲームを開始するのを待っています…</div>')+'<button class="btn-secondary" onclick="cleanupAndMenu()" style="margin-top:8px;">メニューへ戻る</button></div>';
+    const iWon=v.gameWinner===t('あなた','You');
+    document.getElementById('root').innerHTML='<div class="game-over-screen"><h2>'+(iWon?'🎉':'💀')+'</h2><h2>'+v.gameWinner+t('の勝利！',' wins!')+'</h2><p>'+(iWon?t('おめでとうございます！','Congratulations!'):t('残念…また挑戦しよう！','Better luck next time!'))+'</p>'+(isHost?'<button class="btn-primary" onclick="startOnlineGame()">'+t('もう一度プレイ','Play Again')+'</button>':'<div style="font-size:13px;color:#6b7280">'+t('ホストが次のゲームを開始するのを待っています…','Waiting for host to start the next game...')+'</div>')+'<button class="btn-secondary" onclick="cleanupAndMenu()" style="margin-top:8px;">'+t('メニューへ戻る','Main Menu')+'</button></div>';
     return;
   }
-  document.getElementById('handNum').textContent='ハンド #'+(v.handCount||'');
+  document.getElementById('handNum').textContent=t('ハンド #','Hand #')+(v.handCount||'');
   const toCall=Math.max(0,v.currentBet-v.myBet),canCheck=toCall===0;
-  const pingBar='<div class="ping-bar"><span class="ping-dot"></span>オンライン対戦中</div>';
-  const tH=tableH(v.myHand,v.opponentHand,v.community,v.phase,v.pot,v.myChips,v.opponentChips,v.myBet,v.opponentBet,v.dealerIsMe,v.myTurn,v.handOver,v.message,true,'相手');
+  const pingBar='<div class="ping-bar"><span class="ping-dot"></span>'+t('オンライン対戦中','Online Match')+'</div>';
+  const tH=tableH(v.myHand,v.opponentHand,v.community,v.phase,v.pot,v.myChips,v.opponentChips,v.myBet,v.opponentBet,v.dealerIsMe,v.myTurn,v.handOver,v.message,true,t('相手','Opponent'));
   const aH=actionH(v.myTurn,v.handOver,canCheck,toCall,v.myChips,v.currentBet,v.myBet);
   const sH=supportH(v.myHand,v.community,v.currentBet,v.myBet,v.pot,v.handOver);
   document.getElementById('root').innerHTML=pingBar+tH+'<div class="action-area">'+aH+'</div>'+sH;
@@ -1365,7 +1742,7 @@ function onRaise(){
 function onNextHand(){
   if(gameMode==='ai')aiNewHand();
   else if(isHost)onlineNewHand();
-  else{document.querySelector('.btn-next').textContent='ホストが次のハンドを開始します…';document.querySelector('.btn-next').disabled=true;}
+  else{document.querySelector('.btn-next').textContent=t('ホストが次のハンドを開始します…','Waiting for host to start next hand...');document.querySelector('.btn-next').disabled=true;}
 }
 
 // ===== MODAL =====
@@ -1396,27 +1773,60 @@ if('serviceWorker' in navigator){
     </div>
   </div>
   <div class="cutin-prog"><div class="cutin-prog-fill" id="cutinProgFill"></div></div>
-  <div class="cutin-dismiss">タップして閉じる</div>
+  <div class="cutin-dismiss" id="cutinDismiss">Tap to dismiss / タップして閉じる</div>
 </div>
 
 <!-- SETTINGS MODAL -->
 <div id="settingsModal" class="modal-overlay" onclick="closeSettings()">
   <div class="modal-box" onclick="event.stopPropagation()" style="max-width:380px;">
-    <h2>⚙️ 設定 <button class="modal-close" onclick="closeSettings()">✕</button></h2>
-    <p class="modal-sub">ゲームの表示設定を変更できます</p>
+    <h2>⚙️ 設定 / Settings <button class="modal-close" onclick="closeSettings()">✕</button></h2>
+    <p class="modal-sub">ゲームの表示設定を変更できます / Customize game display</p>
     <div class="cutin-toggle-row" onclick="toggleCutIn()">
       <div style="flex:1">
-        <div class="cutin-toggle-label">🎬 アクション表示（カットイン）</div>
-        <div class="cutin-toggle-sub">行動内容をポップアップで表示。オフで自動スキップ。</div>
+        <div class="cutin-toggle-label">🎬 アクション表示 / Action Pop-ups</div>
+        <div class="cutin-toggle-sub">行動内容をポップアップで表示。オフで自動スキップ。 / Show action pop-ups. Off to auto-skip.</div>
       </div>
       <div class="toggle-sw" id="cutinToggle"></div>
     </div>
     <div class="cutin-toggle-row" onclick="toggleFoldSkip()" style="margin-top:8px;">
       <div style="flex:1">
-        <div class="cutin-toggle-label">⏭️ フォールド後スキップ（多人数）</div>
-        <div class="cutin-toggle-sub">3人以上の対戦で自分がフォールドしたら残りのAI同士の展開を省略して次のハンドへ。</div>
+        <div class="cutin-toggle-label">⏭️ フォールド後スキップ / Skip After Fold</div>
+        <div class="cutin-toggle-sub">3人以上の対戦でフォールドしたら次のハンドへ。 / In 3+ player games, skip to next hand after folding.</div>
       </div>
       <div class="toggle-sw" id="foldSkipToggle"></div>
+    </div>
+  </div>
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+<div class="streak-badge" id="streakBadge">🔥 <span id="streakNum">2</span>連勝！</div>
+<div class="ach-toast" id="achToast">
+  <div class="ach-title">🏆 Achievement Unlocked!</div>
+  <div class="ach-name" id="achName"></div>
+  <div class="ach-desc" id="achDesc"></div>
+</div>
+<div class="chip-gain" id="chipGain"></div>
+<div class="bighand-flash" id="bigHandFlash">
+  <div class="bighand-inner">
+    <span class="bighand-emoji" id="bigHandEmoji"></span>
+    <div class="bighand-name" id="bigHandName"></div>
+    <div class="bighand-sub" id="bigHandSub"></div>
+  </div>
+</div>
+<!-- STATS MODAL -->
+<div class="stats-modal" id="statsModal" onclick="closeStats()">
+  <div class="stats-box" onclick="event.stopPropagation()">
+    <h3>📊 Stats <button class="modal-close" onclick="closeStats()">✕</button></h3>
+    <div class="stat-item"><span class="stat-label">🎮 ハンド数</span><span class="stat-val" id="st-hands">0</span></div>
+    <div class="stat-item"><span class="stat-label">🏆 勝利数</span><span class="stat-val green" id="st-wins">0</span></div>
+    <div class="stat-item"><span class="stat-label">📈 勝率</span><span class="stat-val" id="st-rate">0%</span></div>
+    <div class="stat-item"><span class="stat-label">🔥 最大連勝</span><span class="stat-val gold" id="st-streak">0</span></div>
+    <div class="stat-item"><span class="stat-label">💰 最大ポット獲得</span><span class="stat-val gold" id="st-maxpot">0</span></div>
+    <div class="stat-item"><span class="stat-label">💎 最強役</span><span class="stat-val" id="st-besthand">—</span></div>
+    <div class="stat-item"><span class="stat-label">📉 チップ増減</span><span class="stat-val" id="st-delta">0</span></div>
+    <div class="chart-wrap">
+      <div class="chart-label">チップ推移</div>
+      <canvas id="chipChart" height="100"></canvas>
     </div>
   </div>
 </div>
