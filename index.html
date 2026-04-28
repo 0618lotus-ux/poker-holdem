@@ -941,7 +941,7 @@ function showCutin({avatar,actor,verb,amount,flavor,isPlayer}){
     document.getElementById('cutinActor').textContent=actor||'';
     document.getElementById('cutinVerb').textContent=verb||'';
     document.getElementById('cutinAmount').textContent=amount||'';
-    document.getElementById('cutinFlavor').textContent=flavor||'';
+    // flavor text removed
     // Highlight color based on action
     const borderMap={fold:'#ef4444',check:'#6b7280',call:'#2563eb',raise:'#16a34a',player:'#6366f1'};
     const bKey=isPlayer?'player':verb&&(verb.includes('フォールド')||verb.includes('Fold'))?'fold':verb&&(verb.includes('チェック')||verb.includes('Check'))?'check':verb&&(verb.includes('コール')||verb.includes('Call'))?'call':'raise';
@@ -960,11 +960,20 @@ function dismissCutin(){
   document.getElementById('cutinToast').classList.remove('show');
   if(cutinResolve){const r=cutinResolve;cutinResolve=null;r();}
 }
+// Tap anywhere on screen to dismiss cutin
+document.addEventListener('click',function(e){
+  const toast=document.getElementById('cutinToast');
+  if(toast&&toast.classList.contains('show'))dismissCutin();
+},true);
 
 // ===== MULTIPLAYER =====
 let peer=null,conn=null,isHost=false;
-let appState='menu'; // menu|lobby_host|lobby_join|waiting|game|disconnected
-let gameMode='ai'; // ai|online
+let appState='menu';
+let gameMode='ai';
+// Guest: pending action (retry on reconnect)
+let _guestPending=null,_guestPendingTimer=null;
+// Host: periodic heartbeat interval
+let _heartbeatInterval=null;
 
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
 
@@ -980,7 +989,7 @@ function mpCreate(){
       conn=c;isHost=true;
       setupConn();
       renderLobbyHost(code,t('相手が接続しました！ゲームを開始します...','Opponent connected! Starting game...'),true);
-      setTimeout(()=>startOnlineGame(),800);
+      // ゲームはconn.openで確実に開始する（タイマーは使わない）
     });
     peer.on('error',err=>{
       if(err.type==='unavailable-id'){const nc=genCode();mpCreateWithCode(nc);}
@@ -996,12 +1005,12 @@ function mpJoin(code){
   try{
     peer=new Peer({debug:0});
     peer.on('open',()=>{
-      conn=peer.connect('pkr-'+code.toLowerCase(),{reliable:true});
+      conn=peer.connect('pkr-'+code.toLowerCase(),{reliable:true,serialization:'json'});
       setupConn();
       renderLobbyJoin(t('接続中...','Connecting...'),'connecting');
       setTimeout(()=>{
         if(appState==='lobby_join')renderLobbyJoin(t('接続できません。コードを確認してください。','Cannot connect. Check the room code.'),'err');
-      },8000);
+      },12000);
     });
     peer.on('error',()=>renderLobbyJoin(t('ルームが見つかりません: ','Room not found: ')+code,'err'));
   }catch(e){renderLobbyJoin(t('PeerJS読込エラー。ページを再読み込みしてください。','Loading error. Please reload.'),'err');}
@@ -1009,30 +1018,72 @@ function mpJoin(code){
 
 function setupConn(){
   conn.on('open',()=>{
-    if(!isHost){renderLobbyJoin(t('接続成功！ゲーム開始を待っています...','Connected! Waiting for game to start...'),'ok');}
+    if(isHost){
+      // 接続が確実に開いてからゲーム開始 or 再接続時にstate再送
+      if(appState==='lobby_host'||appState==='waiting'){
+        startOnlineGame();
+      } else if(appState==='game'){
+        broadcast(); // 再接続時に最新stateを送る
+      }
+    } else {
+      if(appState==='lobby_join'){
+        renderLobbyJoin(t('接続成功！ゲーム開始を待っています...','Connected! Waiting for game to start...'),'ok');
+      } else if(appState==='game' && _guestPending){
+        // 再接続後にpendingアクションを再送
+        conn.send(_guestPending);
+      }
+    }
   });
   conn.on('data',data=>{
     if(data.type==='STATE'&&!isHost){
+      _guestPending=null; // ack確認: stateが届いたのでpendingクリア
+      clearTimeout(_guestPendingTimer);
       V=data.view;render();
     }else if(data.type==='ACTION'&&isHost){
       processGuestAction(data);
+    }else if(data.type==='RESYNC'&&isHost){
+      broadcast(); // ゲストから再同期要求
     }
   });
   conn.on('close',()=>{
-    if(appState==='game'){
-      G.message=t('相手が切断しました','Opponent disconnected');G.handOver=true;
-      if(isHost){computeHostV();render();}
+    stopHeartbeat();
+    if(appState==='game'&&isHost){
+      G.message=t('相手が切断しました','Opponent disconnected');G.handOver=true;computeHostV();render();
     }
   });
-  conn.on('error',()=>{
-    if(appState==='game'){G.message=t('接続エラーが発生しました','Connection error');render();}
+  conn.on('error',(err)=>{
+    if(appState==='game'){
+      if(isHost){broadcast();}
+    }
   });
 }
 
 function sendToGuest(){
-  if(conn&&conn.open)conn.send({type:'STATE',view:guestView()});
+  if(conn&&conn.open){
+    try{conn.send({type:'STATE',view:guestView()});}catch(e){}
+  }
 }
+
+// ===== ハートビート: ホストが2秒ごとにstateを送る =====
+function startHeartbeat(){
+  stopHeartbeat();
+  _heartbeatInterval=setInterval(()=>{
+    if(gameMode==='online'&&isHost&&appState==='game'&&conn&&conn.open){
+      sendToGuest();
+    }
+  },2000);
+}
+function stopHeartbeat(){
+  if(_heartbeatInterval){clearInterval(_heartbeatInterval);_heartbeatInterval=null;}
+}
+
 function guestView(){
+  // gameWinner はホスト視点で設定されているのでゲスト向けに反転する
+  let gw=G.gameWinner;
+  if(G.gameOver){
+    if(G.gameWinner===t('あなた','You'))gw=t('相手','Opponent');
+    else gw=t('あなた','You');
+  }
   return{
     myHand:G.guestHand,
     opponentHand:G.phase==='showdown'?G.hostHand:null,
@@ -1042,7 +1093,7 @@ function guestView(){
     currentBet:G.currentBet,phase:G.phase,
     myTurn:!G.hostTurn,handOver:G.handOver,
     message:G.message,dealerIsMe:!G.dealerIsHost,
-    handCount:G.handCount,isOnline:true,gameOver:G.gameOver,gameWinner:G.gameWinner
+    handCount:G.handCount,isOnline:true,gameOver:G.gameOver,gameWinner:gw
   };
 }
 function computeHostV(){
@@ -1062,17 +1113,18 @@ function broadcast(){computeHostV();sendToGuest();render();}
 
 // ===== GAME STATE =====
 let G={};
-let V={}; // current player's view
+let V={};
 
 function startOnlineGame(){
   appState='game';gameMode='online';
   G={hostChips:1000,guestChips:1000,dealerIsHost:true,handCount:0,phase:'idle',gameOver:false,gameWinner:''};
+  startHeartbeat();
   onlineNewHand();
 }
 
 function onlineNewHand(){
   if(G.hostChips<=0){G.gameOver=true;G.gameWinner=t('相手','Opponent');broadcast();return;}
-  if(G.guestChips<=0){G.gameOver=true;G.gameWinner=t('あなた','You');if(!isHost){G.gameWinner=t('相手','Opponent');}broadcast();return;}
+  if(G.guestChips<=0){G.gameOver=true;G.gameWinner=t('あなた','You');broadcast();return;}
   G.handCount++;
   G.deck=shuffle(mkDeck());
   G.hostHand=[G.deck.pop(),G.deck.pop()];
@@ -1084,12 +1136,15 @@ function onlineNewHand(){
   G.hostChips-=G.hostBet;G.guestChips-=G.guestBet;
   G.pot=G.hostBet+G.guestBet;G.currentBet=BB;
   G.hostActed=false;G.guestActed=false;
-  G.hostTurn=G.dealerIsHost; // dealer(SB) acts first preflop
+  G.hostTurn=G.dealerIsHost;
   broadcast();
 }
 
 function processGuestAction(data){
-  if(G.handOver||G.hostTurn)return;
+  // handOver中は無視
+  if(G.handOver){broadcast();return;}
+  // ホストのターンにゲストのアクションが届いた場合は現状を再送して無視
+  if(G.hostTurn){broadcast();return;}
   const toCall=Math.max(0,G.currentBet-G.guestBet);
   if(data.action==='fold'){
     G.guestActed=true;
@@ -1112,12 +1167,23 @@ function processGuestAction(data){
 
 function onlineAct(action,amount){
   if(!isHost){
-    // Guest sends action to host
-    if(conn&&conn.open)conn.send({type:'ACTION',action,amount});
+    // ゲスト: アクションを保存して送信、ACKが来るまでリトライ
+    const msg={type:'ACTION',action,amount};
+    _guestPending=msg;
+    clearTimeout(_guestPendingTimer);
+    if(conn&&conn.open){
+      try{conn.send(msg);}catch(e){}
+    }
+    // 3秒後にACKなし(stateが届かない)なら再送
+    _guestPendingTimer=setTimeout(()=>{
+      if(_guestPending&&conn&&conn.open){
+        try{conn.send(_guestPending);}catch(e){}
+      }
+    },3000);
     V.myTurn=false;render();
     return;
   }
-  // Host acts
+  // ホスト
   const toCall=Math.max(0,G.currentBet-G.hostBet);
   if(action==='fold'){G.hostActed=true;onlineEndHand('guest',t('あなたがフォールドしました','You folded'));return;}
   if(action==='call'){const toAdd=Math.min(toCall,G.hostChips);G.pot+=toAdd;G.hostChips-=toAdd;G.hostBet+=toAdd;}
@@ -1129,7 +1195,7 @@ function onlineAct(action,amount){
 
 function onlineAdvance(){
   G.hostBet=G.guestBet=G.currentBet=0;G.hostActed=G.guestActed=false;
-  G.hostTurn=!G.dealerIsHost; // post-flop: non-dealer first
+  G.hostTurn=!G.dealerIsHost;
   switch(G.phase){
     case'preflop':G.phase='flop';G.community.push(G.deck.pop(),G.deck.pop(),G.deck.pop());G.message=t('フロップ：共有カード3枚が公開！','Flop: 3 community cards revealed!');break;
     case'flop':G.phase='turn';G.community.push(G.deck.pop());G.message=t('ターン：4枚目が公開！','Turn: 4th card revealed!');break;
@@ -1769,7 +1835,7 @@ if('serviceWorker' in navigator){
       <div class="cutin-actor" id="cutinActor"></div>
       <div class="cutin-verb" id="cutinVerb"></div>
       <div class="cutin-amount" id="cutinAmount"></div>
-      <div class="cutin-flavor" id="cutinFlavor"></div>
+      <div class="cutin-flavor" id="cutinFlavor" style="display:none"></div>
     </div>
   </div>
   <div class="cutin-prog"><div class="cutin-prog-fill" id="cutinProgFill"></div></div>
