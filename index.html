@@ -951,6 +951,7 @@ function showCutin({avatar,actor,verb,amount,flavor,isPlayer}){
     const dur=isPlayer?3000:4500;
     if(bar){bar.style.transition='none';bar.style.width='100%';bar.offsetHeight;bar.style.transition=`width ${dur/1000}s linear`;bar.style.width='0%';}
     toast.classList.add('show');
+    _cutinShownAt=Date.now();
     if(cutinTimer)clearTimeout(cutinTimer);
     cutinTimer=setTimeout(dismissCutin,dur);
   });
@@ -961,9 +962,10 @@ function dismissCutin(){
   if(cutinResolve){const r=cutinResolve;cutinResolve=null;r();}
 }
 // Tap anywhere on screen to dismiss cutin
+let _cutinShownAt=0;
 document.addEventListener('click',function(e){
   const toast=document.getElementById('cutinToast');
-  if(toast&&toast.classList.contains('show'))dismissCutin();
+  if(toast&&toast.classList.contains('show')&&Date.now()-_cutinShownAt>300)dismissCutin();
 },true);
 
 // ===== MULTIPLAYER =====
